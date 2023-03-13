@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_graph"
+    app:startDestination="@id/vendoFragment">
+
+    <fragment
+        android:id="@+id/vendoFragment"
+        android:name="com.esardo.a2ndhand.VendoFragment"
+        android:label="fragment_vendo"
+        tools:layout="@layout/fragment_vendo" />
+    <fragment
+        android:id="@+id/comproFragment"
+        android:name="com.esardo.a2ndhand.ComproFragment"
+        android:label="fragment_compro"
+        tools:layout="@layout/fragment_compro" />
+    <fragment
+        android:id="@+id/favsFragment"
+        android:name="com.esardo.a2ndhand.FavsFragment"
+        android:label="fragment_favs"
+        tools:layout="@layout/fragment_favs" />
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="com.esardo.a2ndhand.MessagesFragment"
+        android:label="fragment_messages"
+        tools:layout="@layout/fragment_messages" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.esardo.a2ndhand.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>

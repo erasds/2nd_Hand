@@ -12,7 +12,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ActivityMainBinding.inflate(layoutInflater).also { binding = it }.root)
 
-        //When the button is clicked it will load the DrawerActivity
         binding.btnLogIn.setOnClickListener {
             startActivity(Intent(this, HomeActivity::class.java))
         }

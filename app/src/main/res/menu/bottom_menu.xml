@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/vendoFragment"
+        android:icon="@drawable/icon_white"
+        android:title="Vendo" />
+
+    <item
+        android:id="@+id/comproFragment"
+        android:icon="@drawable/icon_black"
+        android:title="Compro" />
+
+    <item
+        android:id="@+id/favsFragment"
+        android:icon="@drawable/icon_favorite"
+        android:title="Favoritos" />
+
+    <item
+        android:id="@+id/messagesFragment"
+        android:icon="@drawable/icon_message"
+        android:title="Mensajes" />
+
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/icon_account"
+        android:title="Perfil" />
+</menu>
