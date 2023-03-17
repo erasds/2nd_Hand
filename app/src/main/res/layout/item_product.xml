@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="Product"
+            android:text="Product"
             android:layout_below="@+id/ivImage"
             android:layout_marginTop="8dp" />
 
@@ -37,7 +37,7 @@
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="150 €"
+            android:text="150 €"
             android:textSize="14sp"
             android:layout_below="@+id/tvName"
             android:layout_marginTop="4dp" />
