@@ -13,4 +13,8 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="Theme.SplashScreen" parent="Theme.2ndHand">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <!-- Customize your theme here. -->
+    </style>
 </resources>

@@ -2,7 +2,6 @@ package com.esardo.a2ndhand
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.esardo.a2ndhand.databinding.FragmentProfileBinding
 

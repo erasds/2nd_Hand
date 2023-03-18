@@ -10,10 +10,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_2ndHand)
         setContentView(ActivityMainBinding.inflate(layoutInflater).also { binding = it }.root)
 
         binding.btnLogIn.setOnClickListener {
             startActivity(Intent(this, HomeActivity::class.java))
+        }
+
+        binding.tvSignIn.setOnClickListener {
+            startActivity(Intent(this, SignInActivity::class.java))
         }
     }
 }
