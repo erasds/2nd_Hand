@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProductFragment"
+    android:layout_marginBottom="55dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivPictures"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:src="@drawable/prueba"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tvProdName"/>
+
+        <TextView
+            android:id="@+id/tvProdName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre Producto"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/ivPictures"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tvPrice"/>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="150 €"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/tvProdName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tvState"/>
+
+        <TextView
+            android:id="@+id/tvState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Como nuevo"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tvCategory"/>
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Videojuegos"
+            app:layout_constraintTop_toBottomOf="@+id/tvState"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción sobre las características del producto"
+            app:layout_constraintTop_toBottomOf="@+id/tvCategory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/llSeller"/>
+
+        <LinearLayout
+            android:id="@+id/llSeller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDescription">
+
+            <ImageView
+                android:id="@+id/ivProfilePicture"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:src="@drawable/prueba"/>
+
+            <LinearLayout
+                android:id="@+id/llSellerInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Nombre Usuario"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvUbication"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Valencia"/>
+
+                <TextView
+                    android:id="@+id/tvRanking"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Ranking que no será un TextView"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSendMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviar mensaje"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llSeller"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

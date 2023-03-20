@@ -17,7 +17,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:hint="Usuario"
+            android:hint="Usuario*"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/etPassword"/>
 
@@ -28,7 +28,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
-            android:hint="Contraseña"
+            android:hint="Contraseña*"
             android:inputType="textPassword"
             app:layout_constraintTop_toBottomOf="@+id/etUser"
             app:layout_constraintBottom_toTopOf="@+id/etName"/>
@@ -62,7 +62,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
-            android:hint="Correo electrónico"
+            android:hint="Correo electrónico*"
             android:inputType="textEmailAddress"
             app:layout_constraintTop_toBottomOf="@+id/etSurname"
             app:layout_constraintBottom_toTopOf="@+id/etPhone"/>
@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:hint="Ciudad"
+            android:hint="Ciudad*"
             app:layout_constraintTop_toBottomOf="@+id/etPhone"
             app:layout_constraintBottom_toTopOf="@+id/btnSignIn"/>
 

@@ -30,4 +30,13 @@
         android:name="com.esardo.a2ndhand.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/productFragment"
+        android:name="com.esardo.a2ndhand.ProductFragment"
+        android:label="fragment_product"
+        tools:layout="@layout/fragment_product" >
+        <action
+            android:id="@+id/action_productFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
 </navigation>
