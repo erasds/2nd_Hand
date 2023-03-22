@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98971777407",
+    "project_id": "nd-hand-5db3b",
+    "storage_bucket": "nd-hand-5db3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98971777407:android:1ab126324b71ac8855024a",
+        "android_client_info": {
+          "package_name": "com.esardo.a2ndhand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98971777407-e0o1sbi611922u02pskgml1o6qkddm86.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.esardo.a2ndhand",
+            "certificate_hash": "b066c5ae273b949735268eb5321885021223f8c4"
+          }
+        },
+        {
+          "client_id": "98971777407-3n0186e4i4loommek0nca1hlcor39293.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgrHQGZ6xzRFe40IW7zs3glmAYkut1CL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98971777407-3n0186e4i4loommek0nca1hlcor39293.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
