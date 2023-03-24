@@ -46,7 +46,7 @@
             android:id="@+id/tvState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Como nuevo"
+            android:text="Estado producto"
             app:layout_constraintTop_toBottomOf="@+id/tvPrice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/tvCategory"/>
@@ -55,7 +55,7 @@
             android:id="@+id/tvCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Videojuegos"
+            android:text="Categoría"
             app:layout_constraintTop_toBottomOf="@+id/tvState"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
@@ -100,7 +100,7 @@
                     android:id="@+id/tvUbication"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Valencia"/>
+                    android:text="Ciudad"/>
 
                 <TextView
                     android:id="@+id/tvRanking"

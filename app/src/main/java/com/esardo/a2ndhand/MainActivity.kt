@@ -5,10 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.esardo.a2ndhand.databinding.ActivityMainBinding
+import com.esardo.a2ndhand.model.User
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var userRef: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +32,20 @@ class MainActivity : AppCompatActivity() {
                         val password = user.getString("Password")
                         if (password == binding.etPass.text.toString()) {
                             //User exists and Password is correct
-                            //***Pasarle un intent con el id del usuario???***
-                            startActivity(Intent(this, HomeActivity::class.java))
+                            //Update IsOnline to true
+                            val userId = user.id
+                            userRef = User(userId)
+                            userCol.document(userId).set(
+                                hashMapOf(
+                                    "IsOnline" to true
+                                ), SetOptions.merge()
+                            )
+                            //***Pasarle un intent con el id del usuario***
+                            val intent = Intent(this, HomeActivity::class.java).apply {
+                                putExtra("object", userRef)
+                            }
+                            startActivity(intent)
+                            //startActivity(Intent(this, HomeActivity::class.java))
                         } else {
                             //Wrong Password
                             showMessage("Contraseña incorrecta")
