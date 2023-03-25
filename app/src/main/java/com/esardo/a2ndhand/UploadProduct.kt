@@ -1,6 +1,5 @@
 package com.esardo.a2ndhand
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -20,7 +19,6 @@ class UploadProduct : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(ActivityUploadProductBinding.inflate(layoutInflater).also { binding = it }.root)
 
-        var pastFrag : String? = ""
         var userId = ""
         var isSell = false
         val userRefV = intent.getSerializableExtra("vendo_fragment") as User?
