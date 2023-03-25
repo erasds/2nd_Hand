@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                                     "IsOnline" to true
                                 ), SetOptions.merge()
                             )
-                            //***Pasarle un intent con el id del usuario***
+                            //Start HomeActivity and send UserId
                             val intent = Intent(this, HomeActivity::class.java).apply {
                                 putExtra("object", userRef)
                             }

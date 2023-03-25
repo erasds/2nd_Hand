@@ -55,11 +55,11 @@ class SignInActivity : AppCompatActivity() {
                 )
 
                 db.collection("User").add(user)
-                    .addOnSuccessListener { documentReference ->
+                    .addOnSuccessListener {
                         //User registration completed
                         finish()
                     }
-                    .addOnFailureListener { exception ->
+                    .addOnFailureListener {
                         //Error
                         showMessage("Error al intentar crear el Usuario")
                 }
