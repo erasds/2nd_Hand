@@ -39,7 +39,7 @@ class ProductAdapter(
             //Picasso.get().load(product.image).placeholder(R.drawable.loading).error(R.drawable.error).into(binding.ivImage)
             tvName.text = product.Name
             //Format price erasing decimals if it's value is 0
-            val price = product.Price.toString().replace(".0", "")
+            val price = product.Price.toString().replace(".0", "") + " €"
             tvPrice.text = price
 
             //To load ProductFragment with the data of the item clicked

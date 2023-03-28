@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -15,7 +16,7 @@ import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
 
-class VendoFragment : Fragment() {
+class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var _binding: FragmentVendoBinding
     private val binding get() = _binding!!
 
@@ -47,6 +48,14 @@ class VendoFragment : Fragment() {
         val isSell = true
         viewModel.getAllProducts(isSell)
 
+        //this will get the text of the searchView and set it as the query variable
+        binding.svProduct.setOnQueryTextListener(this)
+        //When SearchView is closed all products load again
+        binding.svProduct.setOnCloseListener {
+            viewModel.getAllProducts(isSell)
+            true
+        }
+
         binding.btnNewProduct.setOnClickListener {
             //Start UploadProduct, send userId and set isSell as true
             val intent = Intent(activity, UploadProduct::class.java)
@@ -73,4 +82,25 @@ class VendoFragment : Fragment() {
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_vendoFragment_to_productFragment, bundle)
     }
+
+    //region SearchView functions
+    //It controls when the text of the SearchView changes
+    override fun onQueryTextChange(newText:String?):Boolean {
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if(!query.isNullOrEmpty()){
+            viewModel.getProductsByName(query)
+            //hideKeyboard()
+        }
+        return true
+    }
+
+    //Function to hide the Keyboard
+    /*private fun hideKeyboard() {
+        val imm = getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+    }*/
+//endregion
 }
