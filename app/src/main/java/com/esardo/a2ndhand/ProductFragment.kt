@@ -42,6 +42,7 @@ class ProductFragment : Fragment() {
         //Format price erasing decimals if it's value is 0
         tvPrice.text = product.Price.toString().replace(".0", "") + " €"
         tvDescription.text = product.Description
+        //***METER LA FECHA DE PUBLICACIÓN POR ALGÚN LADO***
 
         //Get Category name by its Id
         val categoryId = product.CategoryId

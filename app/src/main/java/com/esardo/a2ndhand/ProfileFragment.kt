@@ -22,6 +22,7 @@ class ProfileFragment : Fragment() {
     private lateinit var viewModel: ProductViewModel
 
     private val productList = mutableListOf<Product>()
+    var userId : String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +45,6 @@ class ProfileFragment : Fragment() {
 
         //Funciona pero puede que haya que cambiar alguna cosa
         val arguments = arguments
-        var userId : String = ""
         if(arguments != null){
             userId = arguments.getString("user") as String
         } else {
@@ -83,7 +83,7 @@ class ProfileFragment : Fragment() {
 
     //Setups the RecyclerView
     private fun initRecyclerView() {
-        adapter = ProductAdapter(productList) { product -> loadProduct(product) }
+        adapter = ProductAdapter(viewModel, userId, productList) { product -> loadProduct(product) }
         recyclerView = binding.rvMyProd
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter

@@ -27,6 +27,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var viewModel: ProductViewModel
 
     private val productList = mutableListOf<Product>()
+    private lateinit var userId: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,13 +49,19 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         val isSell = false
-        viewModel.getAllProducts(isSell)
+        val userID = userRef?.id
+        if (userID != null) {
+            userId = userID
+        }
+        viewModel.getAllProducts(isSell, userId)
 
         //this will get the text of the searchView and set it as the query variable
         binding.svProduct.setOnQueryTextListener(this)
         //When SearchView is closed all products load again
         binding.svProduct.setOnCloseListener {
-            viewModel.getAllProducts(isSell)
+            if (userId != null) {
+                viewModel.getAllProducts(isSell, userId)
+            }
             true
         }
 
@@ -70,7 +77,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
 
     //Setups the RecyclerView
     private fun initRecyclerView() {
-        adapter = ProductAdapter(productList) { product -> loadProduct(product) }
+        adapter = ProductAdapter(viewModel, userId, productList) { product -> loadProduct(product) }
         recyclerView = binding.rvCompro
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
@@ -84,6 +91,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_comproFragment_to_productFragment, bundle)
     }
+
 
 //region SearchView functions
     //It controls when the text of the SearchView changes
