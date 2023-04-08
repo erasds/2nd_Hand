@@ -11,7 +11,6 @@ data class Product(
     val Name : String,
     val Description : String,
     val Price : Double,
-    //val Image : String,
     val Picture : Picture,
     val CategoryId : String,
     val IsSell : Boolean,

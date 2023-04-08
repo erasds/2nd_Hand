@@ -12,6 +12,7 @@ import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment() {
     private lateinit var _binding: FragmentProfileBinding
@@ -23,6 +24,8 @@ class ProfileFragment : Fragment() {
 
     private val productList = mutableListOf<Product>()
     var userId : String = ""
+
+    val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,12 +58,13 @@ class ProfileFragment : Fragment() {
 
         //Load user data
         val points = 0
-        val picture = ""
-        val userDoc = FirebaseFirestore.getInstance().collection("User").document(userId)
+        val userDoc = db.collection("User").document(userId)
         userDoc.get().addOnSuccessListener { user ->
             if (user != null) {
                 val userName = user.getString("User")
                 binding.tvUserName.text = userName
+                val picture = user.getString("Picture")
+                Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
                 val townId = user.getString("TownId")
                 if (townId != null){
                     val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)

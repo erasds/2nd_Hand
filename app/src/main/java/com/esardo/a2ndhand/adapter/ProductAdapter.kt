@@ -8,6 +8,7 @@ import com.esardo.a2ndhand.R
 import com.esardo.a2ndhand.databinding.ItemProductBinding
 import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
+import com.squareup.picasso.Picasso
 
 class ProductAdapter(
     private val viewModel: ProductViewModel,
@@ -39,7 +40,10 @@ class ProductAdapter(
         //With Picasso library this will load the Product image, an image to show while data is loading,
         // and an image to show if there's an error loading the Product image
         fun bind (product: Product, userId: String) {
-            //Picasso.get().load(product.image).placeholder(R.drawable.loading).error(R.drawable.error).into(binding.ivImage)
+            val productPic = product.Picture.Pic1
+            if(productPic != "") {
+                Picasso.get().load(productPic).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivImage)
+            }
             tvName.text = product.Name
             //Format price erasing decimals if it's value is 0
             val price = product.Price.toString().replace(".0", "") + " €"

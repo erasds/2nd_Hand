@@ -22,6 +22,7 @@
             app:layout_constraintBottom_toTopOf="@+id/rvMyProd">
 
             <ImageView
+                android:id="@+id/ivProfilePic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="8dp"

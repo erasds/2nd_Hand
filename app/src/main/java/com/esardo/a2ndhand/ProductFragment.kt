@@ -11,6 +11,7 @@ import com.esardo.a2ndhand.databinding.FragmentProductBinding
 import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.google.firebase.firestore.FirebaseFirestore
+import com.squareup.picasso.Picasso
 
 class ProductFragment : Fragment() {
     private lateinit var _binding: FragmentProductBinding
@@ -67,7 +68,8 @@ class ProductFragment : Fragment() {
             val userDoc = FirebaseFirestore.getInstance().collection("User").document(userId)
             userDoc.get().addOnSuccessListener { user ->
                 if (user != null) {
-                    //ivProfilePicture = user.getString("Picture")
+                    val profPicture = user.getString("Picture")
+                    Picasso.get().load(profPicture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePicture)
                     tvUserName.text = user.getString("User")
                     //Get Town name by its Id
                     val townId = user.getString("TownId")

@@ -128,38 +128,41 @@ class ProductViewModel: ViewModel() {
                 }
             }
 
-            // Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección "productDetails"
-            db.collection("Product")
-                .whereIn(FieldPath.documentId(), productIdList)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        val id = document.id
-                        val data = document.toObject<Product>()
-                        val name = data.Name
-                        val description = data.Description
-                        val price = data.Price
-                        val picture = data.Picture
-                        val pic1 = picture.Pic1
-                        val pic2 = picture.Pic2
-                        val pic3 = picture.Pic3
-                        val pic4 = picture.Pic4
-                        val pic5 = picture.Pic5
-                        val categoryId = data.CategoryId
-                        val isSell = data.IsSell
-                        val userId = data.UserId
-                        val townId = data.TownId
-                        val publishDate = data.PublishDate
-                        val product = Product(id, name, description, price, Picture(pic1, pic2, pic3, pic4, pic5), categoryId, isSell, userId, townId, publishDate, true)
-                        productList.add(product)
-                    }
-                    productLiveData.postValue(productList)
+            if(productIdList.isNotEmpty()) {
+                // Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección "productDetails"
+                db.collection("Product")
+                    .whereIn(FieldPath.documentId(), productIdList)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            val id = document.id
+                            val data = document.toObject<Product>()
+                            val name = data.Name
+                            val description = data.Description
+                            val price = data.Price
+                            val picture = data.Picture
+                            val pic1 = picture.Pic1
+                            val pic2 = picture.Pic2
+                            val pic3 = picture.Pic3
+                            val pic4 = picture.Pic4
+                            val pic5 = picture.Pic5
+                            val categoryId = data.CategoryId
+                            val isSell = data.IsSell
+                            val userId = data.UserId
+                            val townId = data.TownId
+                            val publishDate = data.PublishDate
+                            val product = Product(id, name, description, price, Picture(pic1, pic2, pic3, pic4, pic5), categoryId, isSell, userId, townId, publishDate, true)
+                            productList.add(product)
+                        }
+                        productLiveData.postValue(productList)
 
-                }.addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting products: ", exception)
-                    // Si ocurre un error, podemos devolver una lista vacía o manejar el error de otra manera
-                    productLiveData.postValue(emptyList())
-                }
+                    }.addOnFailureListener { exception ->
+                        Log.d(TAG, "Error getting products: ", exception)
+                        // Si ocurre un error, podemos devolver una lista vacía o manejar el error de otra manera
+                        productLiveData.postValue(emptyList())
+                    }
+            }
+
         }.addOnFailureListener { exception ->
             Log.d(TAG, "Error getting product IDs: ", exception)
             // Si ocurre un error, podemos devolver una lista vacía o manejar el error de otra manera
