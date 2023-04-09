@@ -2,16 +2,13 @@ package com.esardo.a2ndhand.viewmodel
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.esardo.a2ndhand.model.Favorite
 import com.esardo.a2ndhand.model.Picture
 import com.esardo.a2ndhand.model.Product
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
-import java.util.Date
 
 class ProductViewModel: ViewModel() {
 
@@ -53,21 +50,35 @@ class ProductViewModel: ViewModel() {
                     val name = data.Name
                     val description = data.Description
                     val price = data.Price
-                    //val image = data.Image
-                    val picture = data.Picture
-                    val pic1 = picture.Pic1
-                    val pic2 = picture.Pic2
-                    val pic3 = picture.Pic3
-                    val pic4 = picture.Pic4
-                    val pic5 = picture.Pic5
                     val categoryId = data.CategoryId
                     val isSell = data.IsSell
                     val userId = data.UserId
                     val townId = data.TownId
                     val publishDate = data.PublishDate
-                    val product = Product(id, name, description, price, Picture(pic1, pic2, pic3, pic4, pic5), categoryId, isSell, userId, townId, publishDate, data.isChecked)
+                    val product = Product(id, name, description, price, Picture("", "", "", "", ""), categoryId, isSell, userId, townId, publishDate, data.isChecked)
                     productList.add(product)
                 }
+
+                //Ahora recorremos los productos para consultar la subcolección de Picture
+                for (product in productList) {
+                    val pictureCol = productCol.document(product.id).collection("Picture")
+                    pictureCol.get().addOnSuccessListener { documents ->
+                        for(document in documents) {
+                            val picData = document.toObject<Picture>()
+                            val pic1 = picData.Pic1
+                            val pic2 = picData.Pic2
+                            val pic3 = picData.Pic3
+                            val pic4 = picData.Pic4
+                            val pic5 = picData.Pic5
+                            product.Picture.Pic1 = pic1
+                            product.Picture.Pic2 = pic2
+                            product.Picture.Pic3 = pic3
+                            product.Picture.Pic4 = pic4
+                            product.Picture.Pic5 = pic5
+                        }
+                    }
+                }
+
                 productLiveData.postValue(productList)
             }
             .addOnFailureListener { exception ->
@@ -140,20 +151,35 @@ class ProductViewModel: ViewModel() {
                             val name = data.Name
                             val description = data.Description
                             val price = data.Price
-                            val picture = data.Picture
-                            val pic1 = picture.Pic1
-                            val pic2 = picture.Pic2
-                            val pic3 = picture.Pic3
-                            val pic4 = picture.Pic4
-                            val pic5 = picture.Pic5
                             val categoryId = data.CategoryId
                             val isSell = data.IsSell
                             val userId = data.UserId
                             val townId = data.TownId
                             val publishDate = data.PublishDate
-                            val product = Product(id, name, description, price, Picture(pic1, pic2, pic3, pic4, pic5), categoryId, isSell, userId, townId, publishDate, true)
+                            val product = Product(id, name, description, price, Picture("", "", "", "", ""), categoryId, isSell, userId, townId, publishDate, true)
                             productList.add(product)
                         }
+
+                        //Ahora recorremos los productos para consultar la subcolección de Picture
+                        for (product in productList) {
+                            val pictureCol = db.collection("Product").document(product.id).collection("Picture")
+                            pictureCol.get().addOnSuccessListener { documents ->
+                                for(document in documents) {
+                                    val picData = document.toObject<Picture>()
+                                    val pic1 = picData.Pic1
+                                    val pic2 = picData.Pic2
+                                    val pic3 = picData.Pic3
+                                    val pic4 = picData.Pic4
+                                    val pic5 = picData.Pic5
+                                    product.Picture.Pic1 = pic1
+                                    product.Picture.Pic2 = pic2
+                                    product.Picture.Pic3 = pic3
+                                    product.Picture.Pic4 = pic4
+                                    product.Picture.Pic5 = pic5
+                                }
+                            }
+                        }
+
                         productLiveData.postValue(productList)
 
                     }.addOnFailureListener { exception ->
@@ -197,20 +223,33 @@ class ProductViewModel: ViewModel() {
                     val name = data.Name
                     val description = data.Description
                     val price = data.Price
-                    //val image = data.Image
-                    val picture = data.Picture
-                    val pic1 = picture.Pic1
-                    val pic2 = picture.Pic2
-                    val pic3 = picture.Pic3
-                    val pic4 = picture.Pic4
-                    val pic5 = picture.Pic5
                     val categoryId = data.CategoryId
                     val isSell = data.IsSell
                     val userId = data.UserId
                     val townId = data.TownId
                     val publishDate = data.PublishDate
-                    val product = Product(id, name, description, price, Picture(pic1, pic2, pic3, pic4, pic5), categoryId, isSell, userId, townId, publishDate, data.isChecked)
+                    val product = Product(id, name, description, price, Picture("", "", "", "", ""), categoryId, isSell, userId, townId, publishDate, data.isChecked)
                     productList.add(product)
+                }
+
+                //Ahora recorremos los productos para consultar la subcolección de Picture
+                for (product in productList) {
+                    val pictureCol = productCol.document(product.id).collection("Picture")
+                    pictureCol.get().addOnSuccessListener { documents ->
+                        for(document in documents) {
+                            val picData = document.toObject<Picture>()
+                            val pic1 = picData.Pic1
+                            val pic2 = picData.Pic2
+                            val pic3 = picData.Pic3
+                            val pic4 = picData.Pic4
+                            val pic5 = picData.Pic5
+                            product.Picture.Pic1 = pic1
+                            product.Picture.Pic2 = pic2
+                            product.Picture.Pic3 = pic3
+                            product.Picture.Pic4 = pic4
+                            product.Picture.Pic5 = pic5
+                        }
+                    }
                 }
                 productLiveData.postValue(productList)
             }
@@ -219,54 +258,4 @@ class ProductViewModel: ViewModel() {
             }
     }
 
-
-
-
-    /*fun getFavoriteProducts(userId: String) {
-        val favoriteCol = db.collection("Favorite")
-        favoriteCol.whereEqualTo("UserId", userId)
-            .get().addOnSuccessListener { documents ->
-                productIdList.clear()
-                for (document in documents) {
-                    val productId = document.getString("ProductId")
-                    productId?.let {
-                        productIdList.add(it)
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error obteniendo favoritos: ", exception)
-            }
-
-        productList.clear()
-        for (productId in productIdList){
-           getProductById(productId)
-        }
-        productLiveData.postValue(productList)
-    }
-
-    fun getProductById(productId: String) {
-        val productCol = db.collection("Product")
-        productCol.whereEqualTo("Product", productId)
-            .get().addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val id = document.id
-                    val data = document.toObject<Product>()
-                    val name = data.Name
-                    val description = data.Description
-                    val price = data.Price
-                    val image = data.Image
-                    val categoryId = data.CategoryId
-                    val isSell = data.IsSell
-                    val userId = data.UserId
-                    val townId = data.TownId
-                    val publishDate = data.PublishDate
-                    val product = Product(id, name, description, price, image, categoryId, isSell, userId, townId, publishDate, true)
-                    productList.add(product)
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error obteniendo productos: ", exception)
-            }
-    }*/
 }

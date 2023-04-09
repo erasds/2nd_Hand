@@ -64,7 +64,9 @@ class ProfileFragment : Fragment() {
                 val userName = user.getString("User")
                 binding.tvUserName.text = userName
                 val picture = user.getString("Picture")
-                Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
+                if(picture != "") {
+                    Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
+                }
                 val townId = user.getString("TownId")
                 if (townId != null){
                     val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)

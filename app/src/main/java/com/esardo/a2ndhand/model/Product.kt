@@ -26,11 +26,11 @@ data class Product(
 
 @Keep
 data class Picture(
-    val Pic1 : String,
-    val Pic2 : String,
-    val Pic3 : String,
-    val Pic4 : String,
-    val Pic5 : String
+    var Pic1 : String,
+    var Pic2 : String,
+    var Pic3 : String,
+    var Pic4 : String,
+    var Pic5 : String
 ) : Serializable
 {
     // Constructor without arguments

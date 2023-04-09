@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
                                 putExtra("object", userRef)
                             }
                             startActivity(intent)
-                            //startActivity(Intent(this, HomeActivity::class.java))
                         } else {
                             //Wrong Password
                             showMessage("Contraseña incorrecta")
@@ -62,7 +61,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.tvSignIn.setOnClickListener {
-            //Start SignInActivity
             startActivity(Intent(this, SignInActivity::class.java))
         }
     }

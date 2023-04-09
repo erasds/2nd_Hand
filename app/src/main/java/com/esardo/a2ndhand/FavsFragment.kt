@@ -1,9 +1,6 @@
 package com.esardo.a2ndhand
 
-import android.content.ContentValues
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +10,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.esardo.a2ndhand.adapter.ProductAdapter
 import com.esardo.a2ndhand.databinding.FragmentFavsBinding
-import com.esardo.a2ndhand.model.Picture
 import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 
 class FavsFragment : Fragment() {
     private lateinit var _binding: FragmentFavsBinding
@@ -54,8 +49,6 @@ class FavsFragment : Fragment() {
         if (userID != null) {
             userId = userID
         }
-
-        //viewModel.getFavoriteProducts(userId)
 
         viewModel.getMyFavorites(userId)
         initRecyclerView()

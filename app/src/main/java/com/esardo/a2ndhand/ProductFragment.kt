@@ -38,7 +38,11 @@ class ProductFragment : Fragment() {
         val tvCategory = binding.tvCategory
         val tvDescription = binding.tvDescription
 
-        //ivPictures
+        //***ESTO TENGO QUE ADAPTARLO PARA QUE MUESTRE MAS DE UNA FOTO, O SEA, QUE SE PUEDA NAVEGAR ENTRE ELLAS***
+        val productPic = product.Picture.Pic1
+        if(productPic != "") {
+            Picasso.get().load(productPic).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(ivPictures)
+        }
         tvProdName.text = product.Name
         //Format price erasing decimals if it's value is 0
         tvPrice.text = product.Price.toString().replace(".0", "") + " €"
@@ -69,7 +73,9 @@ class ProductFragment : Fragment() {
             userDoc.get().addOnSuccessListener { user ->
                 if (user != null) {
                     val profPicture = user.getString("Picture")
-                    Picasso.get().load(profPicture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePicture)
+                    if(profPicture != ""){
+                        Picasso.get().load(profPicture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(ivProfilePicture)
+                    }
                     tvUserName.text = user.getString("User")
                     //Get Town name by its Id
                     val townId = user.getString("TownId")

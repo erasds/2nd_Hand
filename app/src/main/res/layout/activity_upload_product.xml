@@ -10,60 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <HorizontalScrollView
-            android:id="@+id/hsvImages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/ibUpPhotos"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/prueba"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/etProduct">
-
-            <LinearLayout
-                android:id="@+id/llImages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/ibUpPhotos1"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/prueba"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
-                <ImageButton
-                    android:id="@+id/ibUpPhotos2"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/prueba"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
-                <ImageButton
-                    android:id="@+id/ibUpPhotos3"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/prueba"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
-                <ImageButton
-                    android:id="@+id/ibUpPhotos4"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/prueba"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
-                <ImageButton
-                    android:id="@+id/ibUpPhotos5"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/prueba"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"/>
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+            app:layout_constraintBottom_toTopOf="@+id/etProduct"/>
 
         <EditText
             android:id="@+id/etProduct"
@@ -73,7 +30,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:hint="Nombre Producto*"
-            app:layout_constraintTop_toBottomOf="@+id/hsvImages"
+            app:layout_constraintTop_toBottomOf="@+id/ibUpPhotos"
             app:layout_constraintBottom_toTopOf="@+id/etDescription"/>
 
         <EditText

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.esardo.a2ndhand.databinding.ActivitySignInBinding
