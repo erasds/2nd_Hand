@@ -5,55 +5,83 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.esardo.a2ndhand.adapter.MessageAdapter
+import com.esardo.a2ndhand.databinding.FragmentMessagesBinding
+import com.esardo.a2ndhand.model.Chat
+import com.esardo.a2ndhand.model.Message
+import com.esardo.a2ndhand.model.User
+import com.esardo.a2ndhand.viewmodel.MessageViewModel
+import com.google.firebase.Timestamp
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MessagesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MessagesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var _binding: FragmentMessagesBinding
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: MessageAdapter
+    private lateinit var viewModel: MessageViewModel
+
+    private val messageList = mutableListOf<Message>()
+    private lateinit var userId: String
+
+    private lateinit var chat: Chat
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_messages, container, false)
+        _binding = FragmentMessagesBinding.inflate(inflater, container, false)
+        //Obtain our own User reference
+        val userRef = activity?.intent?.getSerializableExtra("object") as? User
+
+        // Obtains object Chat from the arguments
+        chat = requireArguments().getSerializable("objeto") as Chat
+
+        viewModel = ViewModelProvider(this)[MessageViewModel::class.java]
+        viewModel.getAllMessageObserver()
+        //This will observe the messageList of the MessageViewModel class and load the necessary data into the recyclerview
+        //everytime that the fragment is loaded
+        viewModel.messageLiveData.observe(viewLifecycleOwner){
+            messageList.clear()
+            if (it != null) {
+                messageList.addAll(it)
+            }
+            adapter.notifyDataSetChanged()
+        }
+
+        val userID = userRef?.id
+        if (userID != null) {
+            userId = userID
+        }
+
+        viewModel.getAllMessages(userId, chat.id)
+
+        binding.ivSend.setOnClickListener {
+            if(!binding.etMessage.text.isNullOrEmpty()) {
+                val text = binding.etMessage.text.toString()
+                val fromUser = userId
+                val toUser = chat.OtherUser
+                val date = Timestamp(Date())
+                val message = Message("", text, fromUser, toUser, date)
+                viewModel.sendMessage(userId, chat.id, message)
+            }
+            binding.etMessage.text.clear()
+        }
+
+        initRecyclerView()
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MessagesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MessagesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    //Setups the RecyclerView
+    private fun initRecyclerView() {
+        adapter = MessageAdapter(userId, messageList)
+        recyclerView = binding.rvMessage
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapter
     }
+
 }

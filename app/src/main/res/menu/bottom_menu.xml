@@ -16,7 +16,7 @@
         android:title="Favoritos" />
 
     <item
-        android:id="@+id/messagesFragment"
+        android:id="@+id/chatsFragment"
         android:icon="@drawable/icon_message"
         android:title="Mensajes" />
 

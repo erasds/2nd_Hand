@@ -33,11 +33,6 @@
             app:destination="@id/productFragment" />
     </fragment>
     <fragment
-        android:id="@+id/messagesFragment"
-        android:name="com.esardo.a2ndhand.MessagesFragment"
-        android:label="fragment_messages"
-        tools:layout="@layout/fragment_messages" />
-    <fragment
         android:id="@+id/profileFragment"
         android:name="com.esardo.a2ndhand.ProfileFragment"
         android:label="fragment_profile"
@@ -54,5 +49,22 @@
         <action
             android:id="@+id/action_productFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_messagesFragment"
+            app:destination="@id/messagesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.esardo.a2ndhand.ChatsFragment"
+        android:label="fragment_chats"
+        tools:layout="@layout/fragment_chats" >
+        <action
+            android:id="@+id/action_chatsFragment_to_messagesFragment"
+            app:destination="@id/messagesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="com.esardo.a2ndhand.MessagesFragment"
+        android:label="fragment_messages"
+        tools:layout="@layout/fragment_messages" />
 </navigation>

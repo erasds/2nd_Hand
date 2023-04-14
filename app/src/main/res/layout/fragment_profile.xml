@@ -68,8 +68,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Aquí podría poner FragmentContainer y separar compra de venta -->
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMyProd"
             android:layout_width="0dp"
