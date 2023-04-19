@@ -59,6 +59,7 @@ class MessageAdapter(
             if (message.FromUser == userId) {
                 // Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
                 val dateString = dateFormat.format(message.Date?.toDate())
                 binding.tvDate.text = dateString
                 binding.tvMessage.text = message.Text
@@ -72,6 +73,7 @@ class MessageAdapter(
             if (message.FromUser != userId) {
                 // Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
                 val dateString = dateFormat.format(message.Date?.toDate())
                 binding.tvDate.text = dateString
                 binding.tvMessage.text = message.Text

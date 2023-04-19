@@ -91,13 +91,12 @@
             app:layout_constraintTop_toBottomOf="@+id/etMail"
             app:layout_constraintBottom_toTopOf="@+id/etTown"/>
 
-        <!-- Esto puede que sea un desplegable en vez de EditText -->
         <EditText
             android:id="@+id/etTown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:hint="Ciudad*"
+            android:hint="Selecciona Ciudad*"
             app:layout_constraintTop_toBottomOf="@+id/etPhone"
             app:layout_constraintBottom_toTopOf="@+id/btnSignIn"/>
 

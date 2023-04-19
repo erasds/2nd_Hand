@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esardo.a2ndhand.model.Message
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 
 class MessageViewModel: ViewModel() {
@@ -20,27 +21,30 @@ class MessageViewModel: ViewModel() {
     }
 
     fun getAllMessages(userId: String, chatId: String) {
-        /*val messageCol = db.collection("User").document(userId)
-            .collection("Chat").document(chatId)
-            .collection("Message")*/
         val chatDoc = db.collection("User").document(userId)
             .collection("Chat").document(chatId)
         val messageCol = chatDoc.collection("Message")
-        messageCol.get().addOnSuccessListener { documents ->
-            messageList.clear()
-            for(document in documents) {
-                val id = document.id
-                val data = document.toObject<Message>()
-                val text = data.Text
-                val fromUser = data.FromUser
-                val toUser = data.ToUser
-                val date = data.Date
-                val message = Message(id, text, fromUser, toUser, date)
-                messageList.add(message)
+        val query = messageCol.orderBy("Date", Query.Direction.ASCENDING)
+        query.addSnapshotListener { documents, exception ->
+            if (exception != null) {
+                Log.w("TAG", "Listen failed.", exception)
+                return@addSnapshotListener
+            } else {
+                if (documents != null) {
+                    messageList.clear()
+                    for(document in documents) {
+                        val id = document.id
+                        val data = document.toObject<Message>()
+                        val text = data.Text
+                        val fromUser = data.FromUser
+                        val toUser = data.ToUser
+                        val date = data.Date
+                        val message = Message(id, text, fromUser, toUser, date)
+                        messageList.add(message)
+                    }
+                    messageLiveData.postValue(messageList)
+                }
             }
-            messageLiveData.postValue(messageList)
-        }.addOnFailureListener { exception ->
-            Log.w(ContentValues.TAG, "Error obteniendo mensajes: ", exception)
         }
     }
 

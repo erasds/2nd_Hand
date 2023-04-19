@@ -9,6 +9,7 @@ import com.esardo.a2ndhand.databinding.ItemChatBinding
 import com.esardo.a2ndhand.model.Chat
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,16 +58,6 @@ class ChatAdapter(
             text = chat.Message.Text
             date = chat.Message.Date
 
-            /*val messageCol = db.collection("User").document(userId).collection("Chat").document(chat.id).collection("Message")
-            val query = messageCol.orderBy("Date", Query.Direction.DESCENDING)
-            query.get().addOnSuccessListener { documents ->
-                for (document in documents) {
-                    text = document.getString("Text")
-                    date = document.getTimestamp("Date")
-                }
-
-            }*/
-
             //With Picasso library this will load the User image, an image to show while data is loading,
             // and an image to show if there's an error loading the User image
             if(otherUserPicture != "") {
@@ -76,6 +67,7 @@ class ChatAdapter(
             tvLastMsg.text = text
             // Formatea la fecha como un String legible
             val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
             val dateString = dateFormat.format(date?.toDate())
             tvDate.text = dateString
 
