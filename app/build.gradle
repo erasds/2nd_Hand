@@ -61,12 +61,15 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
 
+    //Bouncy Castle
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
+
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.3')
 
-    // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
 

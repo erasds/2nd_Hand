@@ -40,50 +40,66 @@ class ProductViewModel: ViewModel() {
             Log.w(TAG, "Error cargando favoritos: ", exception)
         }
         val productCol = db.collection("Product")
-        productCol.whereEqualTo("IsSell", isSell)
-            .get().addOnSuccessListener { documents ->
-                productList.clear()
-                for (document in documents) {
-                    val id = document.id
-                    val data = document.toObject<Product>()
-                    if(favoriteList.contains(id)) data.isChecked = true
-                    val name = data.Name
-                    val description = data.Description
-                    val price = data.Price
-                    val categoryId = data.CategoryId
-                    val isSell = data.IsSell
-                    val userId = data.UserId
-                    val townId = data.TownId
-                    val publishDate = data.PublishDate
-                    val product = Product(id, name, description, price, Picture("", "", "", "", ""), categoryId, isSell, userId, townId, publishDate, data.isChecked)
-                    productList.add(product)
-                }
+        val query = productCol.whereEqualTo("IsSell", isSell)
+        query.addSnapshotListener { documents, exception ->
+            if (exception != null) {
+                Log.w(TAG, "Error obteniendo productos: ", exception)
+                return@addSnapshotListener
+            } else {
+                if (documents != null) {
+                    productList.clear()
+                    for (document in documents) {
+                        val id = document.id
+                        val data = document.toObject<Product>()
+                        if (favoriteList.contains(id)) data.isChecked = true
+                        val name = data.Name
+                        val description = data.Description
+                        val price = data.Price
+                        val categoryId = data.CategoryId
+                        val isSell = data.IsSell
+                        val userId = data.UserId
+                        val townId = data.TownId
+                        val publishDate = data.PublishDate
+                        val product = Product(
+                            id,
+                            name,
+                            description,
+                            price,
+                            Picture("", "", "", "", ""),
+                            categoryId,
+                            isSell,
+                            userId,
+                            townId,
+                            publishDate,
+                            data.isChecked
+                        )
+                        productList.add(product)
+                    }
 
-                //Ahora recorremos los productos para consultar la subcolección de Picture
-                for (product in productList) {
-                    val pictureCol = productCol.document(product.id).collection("Picture")
-                    pictureCol.get().addOnSuccessListener { documents ->
-                        for(document in documents) {
-                            val picData = document.toObject<Picture>()
-                            val pic1 = picData.Pic1
-                            val pic2 = picData.Pic2
-                            val pic3 = picData.Pic3
-                            val pic4 = picData.Pic4
-                            val pic5 = picData.Pic5
-                            product.Picture.Pic1 = pic1
-                            product.Picture.Pic2 = pic2
-                            product.Picture.Pic3 = pic3
-                            product.Picture.Pic4 = pic4
-                            product.Picture.Pic5 = pic5
+                    //Ahora recorremos los productos para consultar la subcolección de Picture
+                    for (product in productList) {
+                        val pictureCol = productCol.document(product.id).collection("Picture")
+                        pictureCol.get().addOnSuccessListener { documents ->
+                            for (document in documents) {
+                                val picData = document.toObject<Picture>()
+                                val pic1 = picData.Pic1
+                                val pic2 = picData.Pic2
+                                val pic3 = picData.Pic3
+                                val pic4 = picData.Pic4
+                                val pic5 = picData.Pic5
+                                product.Picture.Pic1 = pic1
+                                product.Picture.Pic2 = pic2
+                                product.Picture.Pic3 = pic3
+                                product.Picture.Pic4 = pic4
+                                product.Picture.Pic5 = pic5
+                            }
                         }
                     }
-                }
 
-                productLiveData.postValue(productList)
+                    productLiveData.postValue(productList)
+                }
             }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error obteniendo productos: ", exception)
-            }
+        }
     }
 
     fun getProductsByName(query: String) {

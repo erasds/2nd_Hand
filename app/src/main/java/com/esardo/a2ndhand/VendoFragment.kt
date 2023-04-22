@@ -1,7 +1,9 @@
 package com.esardo.a2ndhand
 
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +17,12 @@ import com.esardo.a2ndhand.databinding.FragmentVendoBinding
 import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var _binding: FragmentVendoBinding
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
@@ -26,6 +30,8 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val productList = mutableListOf<Product>()
     private lateinit var userId: String
+
+    val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,9 +63,7 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
         binding.svProduct.setOnQueryTextListener(this)
         //When SearchView is closed all products load again
         binding.svProduct.setOnCloseListener {
-            if (userId != null) {
-                viewModel.getAllProducts(isSell, userId)
-            }
+            viewModel.getAllProducts(isSell, userId)
             true
         }
 
@@ -71,6 +75,22 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         initRecyclerView()
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Actualizar campo IsOnline a false al cerrar la aplicación
+        db.collection("User").document(userId)
+            .set(
+                hashMapOf(
+                    "IsOnline" to false
+                ), SetOptions.merge()
+            ).addOnSuccessListener {
+                Log.d(ContentValues.TAG, "Se ha actualizado el campo IsOnline")
+            }.addOnFailureListener { e ->
+                Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
+            }
     }
 
     //Setups the RecyclerView
@@ -90,7 +110,6 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
             ?.navigate(R.id.action_vendoFragment_to_productFragment, bundle)
     }
 
-    //region SearchView functions
     //It controls when the text of the SearchView changes
     override fun onQueryTextChange(newText:String?):Boolean {
         return true
@@ -99,15 +118,7 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextSubmit(query: String?): Boolean {
         if(!query.isNullOrEmpty()){
             viewModel.getProductsByName(query)
-            //hideKeyboard()
         }
         return true
     }
-
-    //Function to hide the Keyboard
-    /*private fun hideKeyboard() {
-        val imm = getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
-    }*/
-//endregion
 }
