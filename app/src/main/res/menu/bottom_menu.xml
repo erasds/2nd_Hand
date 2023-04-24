@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/vendoFragment"
-        android:icon="@drawable/icon_white"
+        android:icon="@drawable/icon_sell"
         android:title="Vendo" />
 
     <item
         android:id="@+id/comproFragment"
-        android:icon="@drawable/icon_black"
+        android:icon="@drawable/icon_buy"
         android:title="Compro" />
 
     <item

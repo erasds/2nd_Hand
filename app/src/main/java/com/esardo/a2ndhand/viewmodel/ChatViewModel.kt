@@ -1,8 +1,13 @@
 package com.esardo.a2ndhand.viewmodel
 
+import android.content.ContentValues
+import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.Navigation
+import com.esardo.a2ndhand.R
 import com.esardo.a2ndhand.model.Chat
 import com.esardo.a2ndhand.model.Message
 import com.google.firebase.Timestamp
@@ -72,5 +77,62 @@ class ChatViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    fun createNewChat(userId: String, productUserId: String): LiveData<Chat?> {
+        val chatLiveData = MutableLiveData<Chat?>()
+        var chat: Chat? = null
+        val chatCol = db.collection("User").document(userId).collection("Chat")
+        chatCol.whereEqualTo("OtherUser", productUserId)
+            .get().addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    for(document in documents) {
+                        val id = document.id
+                        val data = document.toObject<Chat>()
+                        val otherUser = data.OtherUser
+                        chat = Chat(id, otherUser, Message("", "", "", "", null))
+                    }
+
+                    //Si el chat ya existe ya podemos devolverlo
+                    chatLiveData.postValue(chat)
+                } else {
+                    //Si no existe primero lo creamos para el usuario logeado
+                    val chat1 = hashMapOf(
+                        "OtherUser" to productUserId
+                    )
+                    db.collection("User").document(userId)
+                        .collection("Chat").add(chat1)
+                        .addOnSuccessListener { documentReference ->
+                            //Now I can obtain it's data
+                            val documentId = documentReference.id
+                            chatCol.document(documentId).get()
+                                .addOnSuccessListener { documentSnapshot ->
+                                    chat = Chat(documentId, productUserId, Message("", "", "", "", null))
+
+                                    //Chat creation completed
+                                    Log.d(ContentValues.TAG, "Chat creado para el usuario logeado")
+
+                                    //Lo creamos también para el otro usuario
+                                    val chat2 = hashMapOf(
+                                        "OtherUser" to userId
+                                    )
+                                    db.collection("User").document(productUserId)
+                                        .collection("Chat").add(chat2)
+                                        .addOnSuccessListener {
+                                            //Chat creation completed
+                                            Log.d(ContentValues.TAG, "Chat creado para el otro usuario")
+
+                                            //Después devolvemos el chat de nuestro usuario
+                                            chatLiveData.postValue(chat)
+                                        }
+                                }
+                        }
+                        .addOnFailureListener { exception ->
+                            //Error
+                            Log.w(ContentValues.TAG, "Error al intentar crear un chat: ", exception)
+                        }
+                }
+            }
+        return chatLiveData
     }
 }

@@ -140,6 +140,76 @@ class UserViewModel: ViewModel() {
         return isUserRegisteredSuccessfully
     }
 
+    fun updateUser(
+        userId: String,
+        userName: String,
+        name: String,
+        surname: String,
+        phone: String,
+        town: String,
+        imageUri: Uri?): LiveData<Boolean>
+    {
+        val isUserUpdatedSuccessfully = MutableLiveData<Boolean>()
+        //Obtenemos el townId
+        var townId = ""
+        var picture = ""
+        val townCol = db.collection("Town")
+            townCol.whereEqualTo("Name", town).get().addOnSuccessListener { towns ->
+                for (town in towns) {
+                    townId = town.id
+                }
+                //Subimos la foto y obtenemos su referencia
+                val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
+                if (imageUri != null) {
+                    val uploadTask = storageRef.putFile(imageUri)
+                    uploadTask.addOnSuccessListener { taskSnapshot ->
+                        storageRef.downloadUrl.addOnSuccessListener { uri ->
+                            picture = uri.toString()
+
+                            //Actualizamos los datos del usuario
+                            val userCol = db.collection("User")
+                            userCol.document(userId).set(
+                                hashMapOf(
+                                    "User" to userName,
+                                    "Name" to name,
+                                    "Surname" to surname,
+                                    "Phone" to phone,
+                                    "TownId" to townId,
+                                    "Picture" to picture
+                                ), SetOptions.merge())
+                                .addOnSuccessListener {
+                                    isUserUpdatedSuccessfully.postValue(true)
+                                    Log.d(ContentValues.TAG, "Usuario actualizado con éxtio")
+                                }.addOnFailureListener { e ->
+                                    isUserUpdatedSuccessfully.postValue(false)
+                                    Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
+                                }
+                        }
+                    }
+                } else {
+                    //Actualizamos los datos del usuario sin la foto
+                    val userCol = db.collection("User")
+                    userCol.document(userId).set(
+                        hashMapOf(
+                            "User" to userName,
+                            "Name" to name,
+                            "Surname" to surname,
+                            "Phone" to phone,
+                            "TownId" to townId
+                        ), SetOptions.merge())
+                        .addOnSuccessListener {
+                            isUserUpdatedSuccessfully.postValue(true)
+                            Log.d(ContentValues.TAG, "Usuario actualizado con éxtio")
+                        }.addOnFailureListener { e ->
+                            isUserUpdatedSuccessfully.postValue(false)
+                            Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
+                        }
+                }
+
+            }
+        return isUserUpdatedSuccessfully
+    }
+
     fun isMailAlreadyRegistered(email: String, callback: (Boolean) -> Unit) {
         var registered = false
         val userCol = db.collection("User")

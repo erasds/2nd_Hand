@@ -16,13 +16,12 @@ import com.esardo.a2ndhand.viewmodel.ProductViewModel
 
 class FavsFragment : Fragment() {
     private lateinit var _binding: FragmentFavsBinding
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
     private lateinit var viewModel: ProductViewModel
 
-    var productIdList = mutableListOf<String>()
     private val productList = mutableListOf<Product>()
     private lateinit var userId: String
 

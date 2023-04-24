@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.esardo.a2ndhand.databinding.FragmentProductBinding
@@ -14,6 +15,8 @@ import com.esardo.a2ndhand.model.Chat
 import com.esardo.a2ndhand.model.Message
 import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
+import com.esardo.a2ndhand.viewmodel.ChatViewModel
+import com.esardo.a2ndhand.viewmodel.UserViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.squareup.picasso.Picasso
@@ -25,6 +28,8 @@ class ProductFragment : Fragment() {
     private lateinit var product : Product
     private lateinit var userId: String
 
+    private lateinit var viewModel:ChatViewModel
+
     val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
@@ -32,6 +37,9 @@ class ProductFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentProductBinding.inflate(inflater, container, false)
+
+        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
+
         // Obtain NavController Object
         val navController = findNavController()
         //Obtain our own User reference
@@ -120,7 +128,18 @@ class ProductFragment : Fragment() {
         }
 
         binding.btnSendMessage.setOnClickListener {
-            var chat: Chat? = null
+            viewModel.createNewChat(userId, productUserId).observe(viewLifecycleOwner) { chat ->
+                if (chat != null) {
+                    val bundle = Bundle()
+                    bundle.putSerializable("objeto", chat)
+
+                    view?.let { Navigation.findNavController(it) }
+                        ?.navigate(R.id.action_productFragment_to_messagesFragment, bundle)
+                }
+            }
+            //val chat: Chat? = viewModel.createNewChat(userId, productUserId)
+
+            /*var chat: Chat? = null
             val chatCol = db.collection("User").document(userId).collection("Chat")
             chatCol.whereEqualTo("OtherUser", productUserId)
                 .get().addOnSuccessListener { documents ->
@@ -151,12 +170,6 @@ class ProductFragment : Fragment() {
                                 chatCol.document(documentId).get()
                                     .addOnSuccessListener { documentSnapshot ->
                                         val chat = documentSnapshot.toObject(Chat::class.java)
-                                        /*for(document in documents) {
-                                            val id = document.id
-                                            val data = document.toObject<Chat>()
-                                            val otherUser = data.OtherUser
-                                            chat = Chat(id, otherUser, Message("", "", "", "", null))
-                                        }*/
 
                                         //Lo preparamos para luego enviarlo como argumento
                                         val bundle = Bundle()
@@ -186,7 +199,7 @@ class ProductFragment : Fragment() {
                                 Log.w(ContentValues.TAG, "Error al intentar crear un chat: ", exception)
                             }
                     }
-                }
+                }*/
 
         }
         return binding.root

@@ -1,7 +1,11 @@
 package com.esardo.a2ndhand
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.view.View.GONE
+import android.view.View.INVISIBLE
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -49,8 +53,12 @@ class ProfileFragment : Fragment() {
         //Funciona pero puede que haya que cambiar alguna cosa
         val arguments = arguments
         if(arguments != null){
+            //Si es el perfil de otro usuario
             userId = arguments.getString("user") as String
+            binding.btnEditProfile.visibility = INVISIBLE
         } else {
+            //Si es nuestro perfil
+            binding.btnVote.visibility = GONE
             if (userRef != null) {
                 userId = userRef.id
             }
@@ -59,21 +67,26 @@ class ProfileFragment : Fragment() {
         //Load user data
         val points = 0
         val userDoc = db.collection("User").document(userId)
-        userDoc.get().addOnSuccessListener { user ->
-            if (user != null) {
-                val userName = user.getString("User")
-                binding.tvUserName.text = userName
-                val picture = user.getString("Picture")
-                if(picture != "") {
-                    Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
-                }
-                val townId = user.getString("TownId")
-                if (townId != null){
-                    val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)
-                    townDoc.get().addOnSuccessListener { town ->
-                        if (town != null) {
-                            val townName = town.getString("Name")
-                            binding.tvUbication.text = townName
+        userDoc.addSnapshotListener { user, exception ->
+            if(exception != null) {
+                Log.w("TAG", "Listen failed.", exception)
+                return@addSnapshotListener
+            } else {
+                if (user != null) {
+                    val userName = user.getString("User")
+                    binding.tvUserName.text = userName
+                    val picture = user.getString("Picture")
+                    if(picture != "") {
+                        Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
+                    }
+                    val townId = user.getString("TownId")
+                    if (townId != null){
+                        val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)
+                        townDoc.get().addOnSuccessListener { town ->
+                            if (town != null) {
+                                val townName = town.getString("Name")
+                                binding.tvUbication.text = townName
+                            }
                         }
                     }
                 }
@@ -81,6 +94,18 @@ class ProfileFragment : Fragment() {
         }
 
         viewModel.getMyProducts(userId)
+
+        binding.btnEditProfile.setOnClickListener {
+            //Start SignInActivity and send UserId
+            val intent = Intent(requireContext(), SignInActivity::class.java).apply {
+                putExtra("object", userRef)
+            }
+            startActivity(intent)
+        }
+
+        binding.btnVote.setOnClickListener {
+            //Abrir diálogo con las manos para votar y un editText para añadir un comentario
+        }
 
         setHasOptionsMenu(true)
         initRecyclerView()
