@@ -55,23 +55,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*override fun onDestroy() {
-        // Actualizar campo IsOnline a false al destruir la actividad
-        userId?.let {
-            db.collection("User").document(it)
-                .set(
-                    hashMapOf(
-                        "IsOnline" to false
-                    ), SetOptions.merge()
-                ).addOnSuccessListener {
-                    Log.d(ContentValues.TAG, "Se ha actualizado el campo IsOnline")
-                    super.onDestroy()
-                }.addOnFailureListener { e ->
-                    Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
-                }
-        }
-    }*/
-
     private fun showMessage(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }

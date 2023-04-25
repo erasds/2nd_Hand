@@ -1,8 +1,10 @@
 package com.esardo.a2ndhand
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
 import android.view.View.INVISIBLE
@@ -104,7 +106,15 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnVote.setOnClickListener {
-            //Abrir diálogo con las manos para votar y un editText para añadir un comentario
+            val builder = AlertDialog.Builder(requireContext())
+            val view = layoutInflater.inflate(R.layout.dialog_add_vote, null)
+
+            builder.setView(view)
+
+            val dialog = builder.create()
+
+            dialog.show()
+
         }
 
         setHasOptionsMenu(true)
