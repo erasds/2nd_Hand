@@ -7,10 +7,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.esardo.a2ndhand.model.Rating
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -21,6 +23,13 @@ class UserViewModel: ViewModel() {
     private val storage = FirebaseStorage.getInstance()
     val db = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
+
+    private val ratingList = mutableListOf<Rating>()
+    var ratingLiveData: MutableLiveData<List<Rating>?> = MutableLiveData()
+
+    fun getAllVotesObserver(): MutableLiveData<List<Rating>?> {
+        return ratingLiveData
+    }
 
     fun registerUser(userName: String,
                      password: String,
@@ -249,6 +258,59 @@ class UserViewModel: ViewModel() {
             }.addOnFailureListener { e ->
                 Log.d(ContentValues.TAG, "Se ha producido un error al intentar obtener el usuario",e)
             }
+    }
+
+    fun getVotes(userId: String) {
+        val userCol = db.collection("User").document(userId)
+        val ratingCol = userCol.collection("Rating")
+        ratingCol.get().addOnSuccessListener { documents ->
+            ratingList.clear()
+            for (document in documents) {
+                val id = document.id
+                val data = document.toObject<Rating>()
+                val observations = data.Observations
+                val points = data.Points
+                val fromId = data.From
+                val rating = Rating(id, fromId, observations, points)
+                ratingList.add(rating)
+            }
+            ratingLiveData.postValue(ratingList)
+        }
+    }
+
+    fun voteUser(userId: String, rating: Int, comment: String): LiveData<Boolean> {
+        val isRatingAddedSuccessfully = MutableLiveData<Boolean>()
+        //primero obtenemos el id del usuario que está haciendo la valoración
+        var fromUserId: String? = ""
+        val user = FirebaseAuth.getInstance().currentUser
+        val userEmail = user?.email
+        val userCol = db.collection("User")
+        userCol.whereEqualTo("Mail", userEmail).get()
+            .addOnSuccessListener { users ->
+                for (user in users) {
+                    fromUserId = user.id
+                }
+
+                //Ahora en la colección del usuario pasado por parámetro añadimos la valoración que le han hecho
+                val rating = hashMapOf(
+                    "From" to fromUserId,
+                    "Points" to rating,
+                    "Observations" to comment
+                )
+
+                val ratingCol = userCol.document(userId).collection("Rating")
+                ratingCol.add(rating).addOnSuccessListener {
+                    isRatingAddedSuccessfully.postValue(true)
+                    Log.d(ContentValues.TAG, "Valoración registrada correctamente")
+                }.addOnFailureListener { e ->
+                    isRatingAddedSuccessfully.postValue(false)
+                    Log.d(
+                        ContentValues.TAG,
+                        "Se ha producido un error al intentar registrar la valoración", e
+                    )
+                }
+            }
+        return isRatingAddedSuccessfully
     }
 
 

@@ -1,6 +1,7 @@
 package com.esardo.a2ndhand
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,17 +9,28 @@ import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
 import android.view.View.INVISIBLE
+import android.widget.Button
+import android.widget.EditText
+import android.widget.RatingBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.esardo.a2ndhand.adapter.ItemAdapter
 import com.esardo.a2ndhand.adapter.ProductAdapter
+import com.esardo.a2ndhand.adapter.RatingAdapter
 import com.esardo.a2ndhand.databinding.FragmentProfileBinding
 import com.esardo.a2ndhand.model.Product
+import com.esardo.a2ndhand.model.Rating
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
+import com.esardo.a2ndhand.viewmodel.TownViewModel
+import com.esardo.a2ndhand.viewmodel.UserViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
     private lateinit var _binding: FragmentProfileBinding
@@ -27,9 +39,13 @@ class ProfileFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
     private lateinit var viewModel: ProductViewModel
+    private lateinit var userViewModel: UserViewModel
 
     private val productList = mutableListOf<Product>()
     var userId : String = ""
+
+    private val ratingList = mutableListOf<Rating>()
+    private lateinit var ratingAdapter: RatingAdapter
 
     val db = FirebaseFirestore.getInstance()
 
@@ -40,6 +56,7 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val userRef = activity?.intent?.getSerializableExtra("object") as? User
 
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         viewModel = ViewModelProvider(this)[ProductViewModel::class.java]
         viewModel.getAllProductObserver()
         //This will observe the productList of the ProductViewModel class and load the necessary data into the recyclerview
@@ -67,7 +84,7 @@ class ProfileFragment : Fragment() {
         }
 
         //Load user data
-        val points = 0
+        var totalPoints = 0
         val userDoc = db.collection("User").document(userId)
         userDoc.addSnapshotListener { user, exception ->
             if(exception != null) {
@@ -81,6 +98,8 @@ class ProfileFragment : Fragment() {
                     if(picture != "") {
                         Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivProfilePic)
                     }
+
+                    //Ahora obtenemos el nombre de la ciudad
                     val townId = user.getString("TownId")
                     if (townId != null){
                         val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)
@@ -88,6 +107,17 @@ class ProfileFragment : Fragment() {
                             if (town != null) {
                                 val townName = town.getString("Name")
                                 binding.tvUbication.text = townName
+                            }
+
+                            //Ahora cargamos los puntos del usuario
+                            val ratingCol = userDoc.collection("Rating")
+                            ratingCol.get().addOnSuccessListener { querySnapshot ->
+                                for(document in querySnapshot.documents) {
+                                    val points = document.getLong("Points")?.toInt() ?: 0
+                                    totalPoints += points
+                                }
+                                val totalPtsStr = totalPoints.toString()
+                                binding.tvRating.text = "$totalPtsStr puntos de usuario"
                             }
                         }
                     }
@@ -105,6 +135,32 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.tvSeeVotes.setOnClickListener {
+            val dialog = Dialog(requireContext())
+            dialog.setContentView(R.layout.dialog_show_votes)
+
+            ratingAdapter = RatingAdapter(ratingList)
+            val recyclerView = dialog.findViewById<RecyclerView>(R.id.rvVotes)
+            val layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.layoutManager = layoutManager
+            recyclerView.setHasFixedSize(true)
+            recyclerView.adapter = ratingAdapter
+
+            userViewModel.getAllVotesObserver()
+            //This will observe the ratingList of the UserViewModel class and load the necessary data into the recyclerview
+            //everytime that the dialog is loaded
+            userViewModel.ratingLiveData.observe(viewLifecycleOwner){
+                ratingList.clear()
+                if (it != null) {
+                    ratingList.addAll(it)
+                }
+                ratingAdapter.notifyDataSetChanged()
+            }
+            userViewModel.getVotes(userId)
+
+            dialog.show()
+        }
+
         binding.btnVote.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
             val view = layoutInflater.inflate(R.layout.dialog_add_vote, null)
@@ -114,6 +170,26 @@ class ProfileFragment : Fragment() {
             val dialog = builder.create()
 
             dialog.show()
+
+            val btnSendVote = view.findViewById<Button>(R.id.btnSendVote)
+
+            btnSendVote.setOnClickListener {
+                //Cojo el valor del rating bar
+                val ratingBar = view.findViewById<RatingBar>(R.id.rbHands)
+                val rating = ratingBar.rating.toInt()
+
+                //Cojo el valor del comentario
+                val etComment = view.findViewById<EditText>(R.id.etComment)
+                val comment = etComment.text.toString()
+
+                //Lo inserto en la base de datos y cierro el diálogo
+                userViewModel.voteUser(userId, rating, comment)
+                    .observe(viewLifecycleOwner) { isRated ->
+                    if (isRated) {
+                        dialog.cancel()
+                    }
+                }
+            }
 
         }
 

@@ -19,7 +19,7 @@ import java.util.*
 
 class MessagesFragment : Fragment() {
     private lateinit var _binding: FragmentMessagesBinding
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MessageAdapter
