@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
     private lateinit var _binding: FragmentProfileBinding
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ProductAdapter
@@ -193,7 +193,6 @@ class ProfileFragment : Fragment() {
 
         }
 
-        setHasOptionsMenu(true)
         initRecyclerView()
         return binding.root
     }
@@ -213,25 +212,5 @@ class ProfileFragment : Fragment() {
         // Navigates to ProductFragment and pass the bundle as an argument
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_profileFragment_to_productFragment, bundle)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.options_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // When the id of the option is...
-        return when (item.itemId) {
-            /*R.id.opcion1 -> {
-                // Agrega aquí el código que deseas ejecutar cuando se seleccione la opción 1 del menú
-                return true
-            }
-            R.id.opcion2 -> {
-                // Agrega aquí el código que deseas ejecutar cuando se seleccione la opción 1 del menú
-                return true
-            }*/
-            else -> return false
-        }
     }
 }

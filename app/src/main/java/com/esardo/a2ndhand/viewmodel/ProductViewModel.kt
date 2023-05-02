@@ -1,29 +1,326 @@
 package com.esardo.a2ndhand.viewmodel
 
+import android.Manifest
+import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.*
 import com.esardo.a2ndhand.model.Picture
 import com.esardo.a2ndhand.model.Product
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
 
+private const val PERMISSION_REQUEST_CODE = 123
 class ProductViewModel: ViewModel() {
 
     var productLiveData: MutableLiveData<List<Product>?> = MutableLiveData()
 
     var productList = mutableListOf<Product>()
-    var favoriteList = mutableListOf<String>()
+    private var favoriteList = mutableListOf<String>()
     var productIdList = mutableListOf<String>()
+    private var picturesList = mutableListOf<String>()
 
     val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
     fun getAllProductObserver(): MutableLiveData<List<Product>?> {
         return productLiveData
+    }
+
+    fun insertProduct(
+        name: String,
+        description: String,
+        price: String,
+        category: String,
+        imageUris: List<Uri>,
+        userId: String,
+        isSell: Boolean,
+        context: Context
+    ): LiveData<Boolean>
+    {
+        val isProductUploadedSuccessfully = MutableLiveData<Boolean>()
+        val priceD = price.toDouble()
+        // Crea un nuevo documento para el producto en Firestore
+        val publishDate = Timestamp(Date())
+        var pic1 = ""
+        var pic2 = ""
+        var pic3 = ""
+        var pic4 = ""
+        var pic5 = ""
+
+        //Get CategoryId
+        val categoryCol = db.collection("Category")
+        val query = categoryCol.whereEqualTo("Name", category)
+        viewModelScope.launch {
+            val querySnapshot = query.get().await()
+            val docSnapshot = querySnapshot.documents[0]
+            val categoryId = docSnapshot.id
+
+            //Get TownId
+            val userDoc = db.collection("User").document(userId)
+            userDoc.get().addOnSuccessListener { user ->
+                if (user != null) {
+                    val townId = user.getString("TownId")
+                    if (townId != null) {
+
+                        //Create new Product with the data obtained
+                        val product = hashMapOf(
+                            "Name" to name,
+                            "Description" to description,
+                            "Price" to priceD,
+                            "CategoryId" to categoryId,
+                            "IsSell" to isSell,
+                            "UserId" to userId,
+                            "TownId" to townId,
+                            "PublishDate" to publishDate
+                        )
+
+                        if(imageUris.isNotEmpty()) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+                                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                                    ActivityCompat.requestPermissions(context as Activity, arrayOf(permission), PERMISSION_REQUEST_CODE)
+                                    return@launch
+                                }
+                                val deferredList = imageUris.map { image ->
+                                    val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
+                                    val uploadTask = storageRef.putFile(image)
+                                    uploadTask.await() // esperar a que la subida del archivo termine
+                                    storageRef.downloadUrl.await() // esperar a que se genere la URL de descarga
+                                }
+                                picturesList.clear()
+                                picturesList.addAll(deferredList.map { it.toString() })
+
+                                when(picturesList.size) {
+                                    0 -> {
+                                        println("No hacemos nada")
+                                    }
+                                    1 -> {
+                                        pic1 = picturesList[0]
+                                    }
+                                    2 -> {
+                                        pic1 = picturesList[0]
+                                        pic2 = picturesList[1]
+                                    }
+                                    3 -> {
+                                        pic1 = picturesList[0]
+                                        pic2 = picturesList[1]
+                                        pic3 = picturesList[2]
+                                    }
+                                    4 -> {
+                                        pic1 = picturesList[0]
+                                        pic2 = picturesList[1]
+                                        pic3 = picturesList[2]
+                                        pic4 = picturesList[3]
+                                    }
+                                    else -> {
+                                        pic1 = picturesList[0]
+                                        pic2 = picturesList[1]
+                                        pic3 = picturesList[2]
+                                        pic4 = picturesList[3]
+                                        pic5 = picturesList[4]
+                                    }
+                                }
+
+                                //Create new Picture with the data obtained
+                                val pictures = hashMapOf(
+                                    "Pic1" to pic1,
+                                    "Pic2" to pic2,
+                                    "Pic3" to pic3,
+                                    "Pic4" to pic4,
+                                    "Pic5" to pic5
+                                )
+
+                                db.collection("Product").document().apply{
+                                    set(product)
+                                    collection("Picture").add(pictures)
+                                        .addOnSuccessListener {
+                                            //Product upload completed
+                                            isProductUploadedSuccessfully.postValue(true)
+                                            Log.d(TAG, "Producto y fotos insertadas con éxtio")
+
+                                        }
+                                        .addOnFailureListener { e ->
+                                            isProductUploadedSuccessfully.postValue(false)
+                                            Log.d(TAG, "Se ha producido un error al intentar insertar el producto y las fotos",e)
+                                        }
+                                }
+                            }
+                        } else {
+                            db.collection("Product").add(product)
+                                .addOnSuccessListener {
+                                    //Product upload completed
+                                    isProductUploadedSuccessfully.postValue(true)
+                                    Log.d(TAG, "Producto insertado con éxtio")
+                                }
+                                .addOnFailureListener { e ->
+                                    isProductUploadedSuccessfully.postValue(false)
+                                    Log.d(TAG, "Se ha producido un error al intentar insertar el producto",e)
+                                }
+
+                        }
+
+                    }
+                }
+            }
+        }
+        return isProductUploadedSuccessfully
+    }
+
+    fun updateProduct(
+        productId: String?,
+        name: String,
+        description: String,
+        price: String,
+        category: String,
+        imageUris: List<Uri>,
+        context: Context
+    ): LiveData<Boolean>
+    {
+        val isProductUploadedSuccessfully = MutableLiveData<Boolean>()
+        val priceD = price.toDouble()
+        // Crea un nuevo documento para el producto en Firestore
+        val publishDate = Timestamp(Date())
+        var pic1 = ""
+        var pic2 = ""
+        var pic3 = ""
+        var pic4 = ""
+        var pic5 = ""
+        var isSell: Boolean? = false
+        var userId: String? = ""
+        var townId: String? = ""
+
+        //Get CategoryId
+        val categoryCol = db.collection("Category")
+        val query = categoryCol.whereEqualTo("Name", category)
+        viewModelScope.launch {
+            val querySnapshot = query.get().await()
+            val docSnapshot = querySnapshot.documents[0]
+            val categoryId = docSnapshot.id
+
+            //Get isSell, userId and TownId
+            val prodCol = db.collection("Product").document(productId!!)
+            prodCol.get().addOnSuccessListener { prod ->
+                if(prod != null) {
+                    isSell = prod.getBoolean("IsSell")
+                    userId = prod.getString("UserId")
+                    townId = prod.getString("TownId")
+                }
+
+                //Create new Product with the data obtained
+                val productUpdated = hashMapOf(
+                    "Name" to name,
+                    "Description" to description,
+                    "Price" to priceD,
+                    "CategoryId" to categoryId,
+                    "IsSell" to isSell,
+                    "UserId" to userId,
+                    "TownId" to townId,
+                    "PublishDate" to publishDate
+                )
+
+                if(imageUris.isNotEmpty()) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+                        if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(context as Activity, arrayOf(permission), PERMISSION_REQUEST_CODE)
+                            return@launch
+                        }
+                        val deferredList = imageUris.map { image ->
+                            val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
+                            val uploadTask = storageRef.putFile(image)
+                            uploadTask.await() // esperar a que la subida del archivo termine
+                            storageRef.downloadUrl.await() // esperar a que se genere la URL de descarga
+                        }
+                        picturesList.clear()
+                        picturesList.addAll(deferredList.map { it.toString() })
+
+                        when(picturesList.size) {
+                            0 -> {
+                                println("No hacemos nada")
+                            }
+                            1 -> {
+                                pic1 = picturesList[0]
+                            }
+                            2 -> {
+                                pic1 = picturesList[0]
+                                pic2 = picturesList[1]
+                            }
+                            3 -> {
+                                pic1 = picturesList[0]
+                                pic2 = picturesList[1]
+                                pic3 = picturesList[2]
+                            }
+                            4 -> {
+                                pic1 = picturesList[0]
+                                pic2 = picturesList[1]
+                                pic3 = picturesList[2]
+                                pic4 = picturesList[3]
+                            }
+                            else -> {
+                                pic1 = picturesList[0]
+                                pic2 = picturesList[1]
+                                pic3 = picturesList[2]
+                                pic4 = picturesList[3]
+                                pic5 = picturesList[4]
+                            }
+                        }
+
+                        //Create new Picture with the data obtained
+                        val pictures = hashMapOf(
+                            "Pic1" to pic1,
+                            "Pic2" to pic2,
+                            "Pic3" to pic3,
+                            "Pic4" to pic4,
+                            "Pic5" to pic5
+                        )
+
+                        db.collection("Product").document(productId).apply{
+                            set(productUpdated)
+                            collection("Picture").add(pictures)
+                                .addOnSuccessListener {
+                                    //Product upload completed
+                                    isProductUploadedSuccessfully.postValue(true)
+                                    Log.d(TAG, "Producto y fotos actualizadas con éxito")
+
+                                }
+                                .addOnFailureListener { e ->
+                                    isProductUploadedSuccessfully.postValue(false)
+                                    Log.d(TAG, "Se ha producido un error al intentar actualizar el producto y las fotos",e)
+                                }
+                        }
+                    }
+                } else {
+                    db.collection("Product").document(productId).apply {
+                        set(productUpdated)
+                            .addOnSuccessListener {
+                                //Product upload completed
+                                isProductUploadedSuccessfully.postValue(true)
+                                Log.d(TAG, "Producto actualizado con éxito")
+                            }
+                            .addOnFailureListener { e ->
+                                isProductUploadedSuccessfully.postValue(false)
+                                Log.d(TAG, "Se ha producido un error al intentar actualizar el producto",e)
+                            }
+                    }
+                }
+            }
+        }
+        return isProductUploadedSuccessfully
     }
 
     fun getAllProducts(isSell: Boolean, userId: String) {

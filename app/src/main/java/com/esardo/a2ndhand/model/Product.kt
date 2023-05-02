@@ -16,12 +16,12 @@ data class Product(
     val IsSell : Boolean,
     val UserId : String,
     val TownId : String,
-    val PublishDate : Timestamp,
+    val PublishDate : Date,
     var isChecked : Boolean
 ) : Serializable
 {
     // Constructor without arguments
-    constructor() : this("", "","",0.0, Picture("", "", "", "", ""), "",false,"","",Timestamp(Date()), false)
+    constructor() : this("", "","",0.0, Picture("", "", "", "", ""), "",false,"","",Date(), false)
 }
 
 @Keep

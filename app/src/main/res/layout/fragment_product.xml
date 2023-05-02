@@ -16,7 +16,28 @@
             android:layout_width="match_parent"
             android:layout_height="350dp"
             android:src="@drawable/prueba"
+            android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tabLayout"/>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager2"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tabLayout"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:tabIndicatorColor="@color/black"
+            app:tabMode="scrollable"
+            app:tabGravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/ivPictures"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/tvProdName"/>
 
@@ -27,7 +48,7 @@
             android:text="Nombre Producto"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/ivPictures"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/tvPrice"/>
 
@@ -52,11 +73,20 @@
             app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
 
         <TextView
+            android:id="@+id/tvPublishDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="01/05/2023"
+            app:layout_constraintTop_toBottomOf="@+id/tvCategory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
+
+        <TextView
             android:id="@+id/tvDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Descripción sobre las características del producto"
-            app:layout_constraintTop_toBottomOf="@+id/tvCategory"
+            app:layout_constraintTop_toBottomOf="@+id/tvPublishDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/llSeller"/>
 
@@ -80,12 +110,32 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvUserName"
+                <LinearLayout
+                    android:id="@+id/llEditProd"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Nombre Usuario"
-                    android:textStyle="bold"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvUserName"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="Nombre Usuario"
+                        android:textStyle="bold"
+                        android:gravity="bottom"/>
+
+                    <ImageButton
+                        android:id="@+id/btnEditProduct"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:scaleType="fitCenter"
+                        android:background="@color/white"
+                        android:src="@drawable/icon_edit_product"/>
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvUbication"
@@ -93,11 +143,27 @@
                     android:layout_height="match_parent"
                     android:text="Ciudad"/>
 
-                <TextView
-                    android:id="@+id/tvRanking"
+                <LinearLayout
+                    android:id="@+id/llRating"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Ranking que no será un TextView"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvRating"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="1000 puntos de usuario" />
+
+                    <TextView
+                        android:id="@+id/tvSeeVotes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:text="[ Ver valoraciones ]" />
+
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

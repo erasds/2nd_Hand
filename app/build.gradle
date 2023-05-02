@@ -57,6 +57,10 @@ dependencies {
     //PICASSO
     implementation 'com.squareup.picasso:picasso:2.8'
 
+    //ViewPager
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
     //Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"

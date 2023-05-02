@@ -1,223 +1,248 @@
 package com.esardo.a2ndhand
 
-import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.esardo.a2ndhand.adapter.ItemAdapter
 import com.esardo.a2ndhand.databinding.ActivityUploadProductBinding
+import com.esardo.a2ndhand.model.Picture
+import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
-import com.google.firebase.Timestamp
+import com.esardo.a2ndhand.viewmodel.CategoryViewModel
+import com.esardo.a2ndhand.viewmodel.ProductViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.lang.Integer.min
-import java.util.*
 
-private const val MAX_IMAGES = 5
 private const val PICK_IMAGE_REQUEST_CODE = 1
-private const val PERMISSION_REQUEST_CODE = 123
 class UploadProduct : AppCompatActivity() {
     private lateinit var binding: ActivityUploadProductBinding
     val context: Context = this
 
-    private var imageUris = mutableListOf<Uri>()
-    val storage = FirebaseStorage.getInstance()
     val db = FirebaseFirestore.getInstance()
-    private var picturesList = mutableListOf<String>()
+
+    private var imageUris = mutableListOf<Uri>()
+    var selectedButtonId: Int = 0
+
+    private lateinit var viewModel: ProductViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ActivityUploadProductBinding.inflate(layoutInflater).also { binding = it }.root)
 
+        viewModel = ViewModelProvider(this)[ProductViewModel::class.java]
+
+        //Saber desde donde se ha abierto la actividad
         var userId = ""
         var isSell = false
         val userRefV = intent.getSerializableExtra("vendo_fragment") as User?
         val userRefC = intent.getSerializableExtra("compro_fragment") as User?
+        val productId = intent.getSerializableExtra("productId") as String?
         if(userRefV != null){
             userId = userRefV.id
             isSell = true
+        } else if (userRefC != null){
+            userId = userRefC.id
         } else {
-            if (userRefC != null) {
-                userId = userRefC.id
+            if(!productId.isNullOrEmpty()) {
+                //Estamos en modo edición
+                //Cargamos los datos del producto en los campos del formulario
+                val productCol = db.collection("Product").document(productId)
+                productCol.get().addOnSuccessListener { prod ->
+                    if(prod != null) {
+                        val name = prod.getString("Name")
+                        binding.etProduct.setText(name)
+                        val description = prod.getString("Description")
+                        if(description != "") binding.etDescription.setText(description)
+                        val price = prod.getDouble("Price")
+                        binding.etPrice.setText((price).toString().replace(".0", ""))
+                        //Obtenemos categoría
+                        val categoryId = prod.getString("CategoryId")
+                        if(categoryId != "") {
+                            val categoryCol = db.collection("Category").document(categoryId!!)
+                            categoryCol.get().addOnSuccessListener { category ->
+                                if(category != null) {
+                                    val categoryName = category.getString("Name")
+                                    binding.etCategory.setText(categoryName)
+                                }
+
+                                //Obtenemos las fotos
+                                val picturesCol = productCol.collection("Picture")
+                                picturesCol.get().addOnSuccessListener { documents ->
+                                    for (document in documents) {
+                                        val pic1 = document.getString("Pic1")
+                                        if(pic1 != "") Picasso.get().load(pic1).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn1)
+                                        val pic2 =  document.getString("Pic2")
+                                        if(pic2 != "") Picasso.get().load(pic2).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn2)
+                                        val pic3 =  document.getString("Pic3")
+                                        if(pic3 != "") Picasso.get().load(pic3).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn3)
+                                        val pic4 =  document.getString("Pic4")
+                                        if(pic4 != "") Picasso.get().load(pic4).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn4)
+                                        val pic5 =  document.getString("Pic5")
+                                        if(pic5 != "") Picasso.get().load(pic5).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn5)
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                //Cambiamos el texto del botón
+                binding.btnUpload.text = "Actualizar"
+
+                //Mostramos la opción de eliminar producto?
             }
         }
 
-        binding.ibUpPhotos.setOnClickListener {
-            selectImages()
+        val onClickListener = View.OnClickListener { view ->
+            // Acción que se realizará cuando se haga clic en cualquiera de los botones
+            selectedButtonId = view.id
+            selectImage(selectedButtonId)
+        }
+
+        binding.iBtn1.setOnClickListener(onClickListener)
+        binding.iBtn2.setOnClickListener(onClickListener)
+        binding.iBtn3.setOnClickListener(onClickListener)
+        binding.iBtn4.setOnClickListener(onClickListener)
+        binding.iBtn5.setOnClickListener(onClickListener)
+
+        binding.etCategory.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                showDialog()
+            }
         }
 
         binding.btnUpload.setOnClickListener {
-            uploadProduct(userId, isSell)
+            val name = binding.etProduct.text.toString()
+            val description = binding.etDescription.text.toString()
+            val price = binding.etPrice.text.toString()
+            val category = binding.etCategory.text.toString()
+            if(name.isNotEmpty() && price.isNotEmpty() && category.isNotEmpty()) {
+                if (productId != null) {
+                    viewModel.updateProduct( //Actualizar producto
+                        productId,
+                        name,
+                        description,
+                        price,
+                        category,
+                        imageUris,
+                        context
+                    ).observe(this) { isFinished ->
+                        if(isFinished) {
+                            imageUris.clear()
+                            finish()
+                        }
+                    }
+                } else {
+                    viewModel.insertProduct( //Nuevo producto
+                        name,
+                        description,
+                        price,
+                        category,
+                        imageUris,
+                        userId,
+                        isSell,
+                        context
+                    ).observe(this) { isFinished ->
+                        if (isFinished) {
+                            imageUris.clear()
+                            finish()
+                        }
+                    }
+                }
+            } else {
+                showMessage("Debe rellenar los campos obligatorios")
+            }
         }
     }
 
     //To select product images
-    private fun selectImages() {
-        val intent = Intent()//Intent.ACTION_PICK
+    private fun selectImage(buttonId: Int) {
+        selectedButtonId = buttonId
+        val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Permitir seleccionar múltiples imágenes
         intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(
-            Intent.createChooser(
-                intent,
-                "Selecciona hasta $MAX_IMAGES imágenes"
-            ), PICK_IMAGE_REQUEST_CODE)//intent, PICK_IMAGE_REQUEST_CODE
+        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
     }
-    //To save those images into a list
+    //To save the image path into a list
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            val clipData = data?.clipData
-            if (clipData != null) {
-                for (i in 0 until min(MAX_IMAGES, clipData.itemCount)) {
-                    imageUris.add(clipData.getItemAt(i).uri)
-                }
-            } else {
-                data?.data?.let { imageUri ->
-                    imageUris.add(imageUri)
-                }
+        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK && data != null && data.data != null) {
+            imageUris.add(data.data!!)
+            //Convierte la Uri en un Bitmal para la miniatura
+            val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.data)
+            //Busca el botón correspondiente y configura el Bitmap como fuente de la imagen
+            when (selectedButtonId) {
+                R.id.iBtn1 -> binding.iBtn1.setImageBitmap(bitmap)
+                R.id.iBtn2 -> binding.iBtn2.setImageBitmap(bitmap)
+                R.id.iBtn3 -> binding.iBtn3.setImageBitmap(bitmap)
+                R.id.iBtn4 -> binding.iBtn4.setImageBitmap(bitmap)
+                R.id.iBtn5 -> binding.iBtn5.setImageBitmap(bitmap)
             }
         }
     }
 
-    //To upload product and images to the database
-    private fun uploadProduct(userId: String, isSell: Boolean) {
-        // Crea un nuevo documento para el producto en Firestore
-        val name = binding.etProduct.text.toString()
-        val description = binding.etDescription.text.toString()
-        val price = binding.etPrice.text.toString().toDouble()
-        val publishDate = Timestamp(Date())
-        val category = binding.etCategory.text.toString()
-        var pic1 = ""
-        var pic2 = ""
-        var pic3 = ""
-        var pic4 = ""
-        var pic5 = ""
+    private fun showDialog() {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_selection)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
 
-        //Get CategoryId
-        val categoryCol = db.collection("Category")
-        val query = categoryCol.whereEqualTo("Name", category)
+        val recyclerView = dialog.findViewById<RecyclerView>(R.id.rvList)
+        val layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutManager
+
+        val viewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
         lifecycleScope.launch {
-            val querySnapshot = query.get().await()
-            val docSnapshot = querySnapshot.documents[0]
-            val categoryId = docSnapshot.id
-
-            //Get TownId
-            val userDoc = db.collection("User").document(userId)
-            userDoc.get().addOnSuccessListener { user ->
-                if (user != null) {
-                    val townId = user.getString("TownId")
-                    if (townId != null) {
-                        //Create new Product with the data obtained
-                        val product = hashMapOf(
-                            "Name" to name,
-                            "Description" to description,
-                            "Price" to price,
-                            "CategoryId" to categoryId,
-                            "IsSell" to isSell,
-                            "UserId" to userId,
-                            "TownId" to townId,
-                            "PublishDate" to publishDate
-                        )
-
-                        if(imageUris.isNotEmpty()) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-                                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                                    ActivityCompat.requestPermissions(context as Activity, arrayOf(permission), PERMISSION_REQUEST_CODE)
-                                    return@launch
-                                }
-                                val deferredList = imageUris.map { image ->
-                                    val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
-                                    val uploadTask = storageRef.putFile(image)
-                                    uploadTask.await() // esperar a que la subida del archivo termine
-                                    storageRef.downloadUrl.await() // esperar a que se genere la URL de descarga
-                                }
-                                picturesList.clear()
-                                picturesList.addAll(deferredList.map { it.toString() })
-
-                                when(picturesList.size) {
-                                    0 -> {
-                                        println("No hacemos nada")
-                                    }
-                                    1 -> {
-                                        pic1 = picturesList[0]
-                                    }
-                                    2 -> {
-                                        pic1 = picturesList[0]
-                                        pic2 = picturesList[1]
-                                    }
-                                    3 -> {
-                                        pic1 = picturesList[0]
-                                        pic2 = picturesList[1]
-                                        pic3 = picturesList[2]
-                                    }
-                                    4 -> {
-                                        pic1 = picturesList[0]
-                                        pic2 = picturesList[1]
-                                        pic3 = picturesList[2]
-                                        pic4 = picturesList[3]
-                                    }
-                                    else -> {
-                                        pic1 = picturesList[0]
-                                        pic2 = picturesList[1]
-                                        pic3 = picturesList[2]
-                                        pic4 = picturesList[3]
-                                        pic5 = picturesList[4]
-                                    }
-                                }
-
-                                //Create new Picture with the data obtained
-                                val pictures = hashMapOf(
-                                    "Pic1" to pic1,
-                                    "Pic2" to pic2,
-                                    "Pic3" to pic3,
-                                    "Pic4" to pic4,
-                                    "Pic5" to pic5
-                                )
-
-                                db.collection("Product").document().apply{
-                                    set(product)
-                                    collection("Picture").add(pictures)
-                                        .addOnSuccessListener {
-                                            //Product upload completed
-                                            finish()
-                                        }
-                                        .addOnFailureListener {
-                                            //Error
-                                            showMessage("Error al intentar subir el Producto")
-                                        }
-                                }
-                            }
-                        } else {
-                            db.collection("Product").add(product)
-                                .addOnSuccessListener {
-                                    //Product uploaded completed
-                                    finish()
-                                }
-                                .addOnFailureListener {
-                                    //Error
-                                    showMessage("Error al intentar crear el Usuario")
-                                }
-                        }
-
-                    }
-                }
-            }
+            val categories = viewModel.getCategories()
+            val adapter = ItemAdapter(categories)
+            recyclerView.adapter = adapter
         }
 
+        recyclerView.addOnItemClickListener { position, _, _, _ ->
+            val category = (recyclerView.adapter as ItemAdapter).items[position]
+            binding.etCategory.setText(category)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window?.attributes)
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.window?.attributes = lp
+    }
+
+    private fun RecyclerView.addOnItemClickListener(onClickListener: (position: Int, view: View, any: Any?, any2: Any?) -> Unit) {
+        this.addOnChildAttachStateChangeListener(object : RecyclerView.OnChildAttachStateChangeListener {
+            override fun onChildViewAttachedToWindow(view: View) {
+                view.setOnClickListener {
+                    val holder = getChildViewHolder(view)
+                    onClickListener(holder.adapterPosition, view, null, null)
+                }
+            }
+            override fun onChildViewDetachedFromWindow(view: View) {
+                view.setOnClickListener(null)
+            }
+        })
     }
 
     private fun showMessage(s: String) {
