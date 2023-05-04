@@ -1,16 +1,18 @@
 package com.esardo.a2ndhand
 
 import android.app.Dialog
-import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import android.view.View.GONE
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,7 +28,6 @@ import kotlinx.coroutines.launch
 import org.bouncycastle.jcajce.provider.digest.SHA256
 import java.nio.charset.StandardCharsets
 
-private const val PICK_IMAGE_REQUEST_CODE = 1
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
 
@@ -37,36 +38,36 @@ class SignInActivity : AppCompatActivity() {
 
     private lateinit var viewModel: UserViewModel
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ActivitySignInBinding.inflate(layoutInflater).also { binding = it }.root)
 
-        val userRef = intent?.getSerializableExtra("object") as? User
-
         viewModel = ViewModelProvider(this)[UserViewModel::class.java]
 
-        //Comprobar si estamos en modo edición
+        //Recibimos el userId del ProfileFragment
+        val userRef = intent?.getSerializableExtra("object") as? User
+
+        //Comprobamos si estamos en modo edición
         if(userRef != null) {
             //Obtenemos y cargamos los datos del usuario en los campos del formulario
-            val userID = userRef?.id
-            if (userID != null) {
-                userId = userID
-            }
+            val userID = userRef.id
+            userId = userID
             val userCol = db.collection("User").document(userId)
             userCol.get().addOnSuccessListener { user ->
                 if(user != null) {
                     val picture = user.getString("Picture")
                     if(picture != null) {
-                        Picasso.get().load(picture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ibUpUserPhoto)
+                        Picasso.get().load(picture).placeholder(R.drawable.profile).into(binding.ibUpUserPhoto)
                     }
                     val userName = user.getString("User")
                     binding.etUser.setText(userName)
-                    binding.etPassword.visibility = GONE
+                    binding.tiPassword.visibility = GONE
                     val name = user.getString("Name")
                     if(name != null) binding.etName.setText(name)
                     val surname = user.getString("Surname")
                     if(surname != null) binding.etSurname.setText(surname)
-                    binding.etMail.visibility = GONE
+                    binding.tiMail.visibility = GONE
                     val phone = user.getString("Phone")
                     if(phone != null) binding.etPhone.setText(phone)
                     val townId = user.getString("TownId")
@@ -89,16 +90,19 @@ class SignInActivity : AppCompatActivity() {
 
         }
 
+        //Al pulsarlo llama a la función de seleccionar imagen
         binding.ibUpUserPhoto.setOnClickListener {
             selectImage()
         }
 
+        //Al pulsarlo inicia un diálogo para poder elegir Ciudad
         binding.etTown.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 showDialog()
             }
         }
 
+        //Al pulsarlo envía los datos del formulario a la bbdd
         binding.btnSignIn.setOnClickListener {
             val userName = binding.etUser.text.toString()
             val name = binding.etName.text.toString()
@@ -159,25 +163,45 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun selectImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
-    }
-    //To save the image path into a variable
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK && data != null && data.data != null) {
-            imageUri = data.data
-            //Convierte la Uri en un Bitmal para la miniatura
-            val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+    //Crea el objeto ActivityResultLauncher para seleccionar la imagen y recibir el resultado
+    @RequiresApi(Build.VERSION_CODES.P)
+    private val someActivityResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            imageUri = uri
+            //Se guarda el estado para evitar que se pierda al girar la pantalla
+            onSaveInstanceState(Bundle())
+            //Convierte la Uri en un Bitmap para la miniatura
+            val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, imageUri!!)
+            val bitmap: Bitmap = ImageDecoder.decodeBitmap(source)
             //Configura el Bitmap como fuente de la imagen en el ImageButton
             binding.ibUpUserPhoto.setImageBitmap(bitmap)
         }
     }
+    //Llama al ActivityResultLauncher para seleccionar una imagen
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun selectImage() {
+        someActivityResultLauncher.launch("image/*")
+    }
 
+    //Guarda la imagen seleccionada en la instancia de la actividad
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("image_uri", imageUri)
+    }
+
+    //Restaura la imagen seleccionada desde la instancia de la actividad
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        imageUri = savedInstanceState.getParcelable("image_uri")
+        if (imageUri != null) {
+            val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, imageUri!!)
+            val bitmap: Bitmap = ImageDecoder.decodeBitmap(source)
+            binding.ibUpUserPhoto.setImageBitmap(bitmap)
+        }
+    }
+
+    //Función para encriptar la contraseña
     private fun encryptPassword(password: String): String {
         val passwordBytes = password.toByteArray(StandardCharsets.UTF_8)
         val messageDigest = SHA256.Digest()
@@ -185,16 +209,20 @@ class SignInActivity : AppCompatActivity() {
         return passwordHashBytes.joinToString("") { String.format("%02x", it) }
     }
 
+    //Función para mostrar un diálogo
     private fun showDialog() {
+        //Crea el diálogo y define su layout
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_selection)
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
 
+        //Asigna el RecyclerView
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.rvList)
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
+        //Llenamos el RecyclerView invocando al método getTowns del TownViewModel
         val viewModel = ViewModelProvider(this)[TownViewModel::class.java]
         lifecycleScope.launch {
             val towns = viewModel.getTowns()
@@ -202,6 +230,7 @@ class SignInActivity : AppCompatActivity() {
             recyclerView.adapter = adapter
         }
 
+        //Cuando se pulse una ciudad en concreto muestra su nombre en el EditText de Ciudad
         recyclerView.addOnItemClickListener { position, _, _, _ ->
             val town = (recyclerView.adapter as ItemAdapter).items[position]
             binding.etTown.setText(town)
@@ -217,6 +246,7 @@ class SignInActivity : AppCompatActivity() {
         dialog.window?.attributes = lp
     }
 
+    //Función para seleccionar un item del RecyclerView
     private fun RecyclerView.addOnItemClickListener(onClickListener: (position: Int, view: View, any: Any?, any2: Any?) -> Unit) {
         this.addOnChildAttachStateChangeListener(object : RecyclerView.OnChildAttachStateChangeListener {
             override fun onChildViewAttachedToWindow(view: View) {
