@@ -1,5 +1,6 @@
 package com.esardo.a2ndhand
 
+import android.animation.Animator
 import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.esardo.a2ndhand.adapter.ItemAdapter
 import com.esardo.a2ndhand.databinding.ActivitySignInBinding
 import com.esardo.a2ndhand.model.User
@@ -57,7 +59,7 @@ class SignInActivity : AppCompatActivity() {
             userCol.get().addOnSuccessListener { user ->
                 if(user != null) {
                     val picture = user.getString("Picture")
-                    if(picture != null) {
+                    if(picture != "") {
                         Picasso.get().load(picture).placeholder(R.drawable.profile).into(binding.ibUpUserPhoto)
                     }
                     val userName = user.getString("User")
@@ -82,12 +84,8 @@ class SignInActivity : AppCompatActivity() {
                     }
                 }
             }
-
             //Cambiamos el texto del botón
             binding.btnSignIn.text = "Actualizar"
-
-            //Mostramos la opción de eliminar cuenta?
-
         }
 
         //Al pulsarlo llama a la función de seleccionar imagen
@@ -120,7 +118,7 @@ class SignInActivity : AppCompatActivity() {
                         town,
                         imageUri).observe(this) { isUpdated ->
                         if (isUpdated) {
-                            finish()
+                            successAnimation(binding.ivSuccess, R.raw.success)
                         }
                     }
                 } else {
@@ -150,7 +148,7 @@ class SignInActivity : AppCompatActivity() {
                                     imageUri
                                 ).observe(this) { isRegistered ->
                                     if (isRegistered) {
-                                        finish()
+                                        successAnimation(binding.ivSuccess, R.raw.success)
                                     }
                                 }
                             }
@@ -161,6 +159,29 @@ class SignInActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    //Lanza la animación y cierra la actividad una vez termina
+    private fun successAnimation(
+        imageView: LottieAnimationView,
+        animation: Int,
+    ) {
+        imageView.setAnimation(animation)
+        imageView.playAnimation()
+        imageView.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                // No se necesita implementación aquí
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                finish()
+            }
+            override fun onAnimationCancel(animation: Animator) {
+                // No se necesita implementación aquí
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+                // No se necesita implementación aquí
+            }
+        })
     }
 
     //Crea el objeto ActivityResultLauncher para seleccionar la imagen y recibir el resultado

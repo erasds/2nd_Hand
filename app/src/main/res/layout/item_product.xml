@@ -2,7 +2,6 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     app:cardElevation="5dp"
     android:layout_width="wrap_content"
     android:layout_margin="4dp"
@@ -19,10 +18,9 @@
             android:id="@+id/ivImage"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:src="@drawable/prueba"
+            android:src="@drawable/logo"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"/>
-
 
         <TextView
             android:id="@+id/tvName"
@@ -34,23 +32,29 @@
             android:layout_below="@+id/ivImage"
             android:layout_marginTop="8dp" />
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="150 €"
-            android:textSize="14sp"
-            android:layout_below="@+id/tvName"
-            android:layout_marginTop="4dp" />
+            android:orientation="horizontal"
+            android:layout_below="@+id/tvName">
 
-        <CheckBox
-            android:id="@+id/chxFav"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="150 €"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
 
-            android:layout_below="@+id/ivImage"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"/><!--android:button="@drawable/icon_favorite"-->
+            <CheckBox
+                android:id="@+id/chxFav"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:button="@drawable/custom_checkbox_selector" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

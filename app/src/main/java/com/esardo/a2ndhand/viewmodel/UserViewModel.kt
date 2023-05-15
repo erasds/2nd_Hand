@@ -31,6 +31,7 @@ class UserViewModel: ViewModel() {
         return ratingLiveData
     }
 
+    //Función para registrar nuevos usuarios
     fun registerUser(userName: String,
                      password: String,
                      encryptedPassword: String,
@@ -44,17 +45,18 @@ class UserViewModel: ViewModel() {
         val isUserRegisteredSuccessfully = MutableLiveData<Boolean>()
         var picture = ""
         val registerDate = Timestamp(Date())
-        val isOnline = false
         val lastOnline = Timestamp(Date())
+        //Obtenemos la referencia de la colección
         val usersRef = db.collection("User")
         val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
-        if (imageUri != null) {
+        if (imageUri != null) { //Si tiene imagen de perfil
             val uploadTask = storageRef.putFile(imageUri)
-            uploadTask.addOnSuccessListener { taskSnapshot ->
+            uploadTask.addOnSuccessListener { //La subimos al storage
                 storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    //Obtenemos el path a la imagen
                     picture = uri.toString()
 
-                    //Get TownId
+                    //Obtener TownId
                     val townCol = db.collection("Town")
                     val query = townCol.whereEqualTo("Name", town)
                     viewModelScope.launch {
@@ -62,7 +64,7 @@ class UserViewModel: ViewModel() {
                         val docSnapshot = querySnapshot.documents[0]
                         val townId = docSnapshot.id
 
-                        //Create new User with the data obtained
+                        //Crea nuevo usuario con los datos obtenidos
                         val user = hashMapOf(
                             "User" to userName,
                             "Password" to encryptedPassword,
@@ -72,11 +74,11 @@ class UserViewModel: ViewModel() {
                             "Phone" to phone,
                             "TownId" to townId,
                             "RegisterDate" to registerDate,
-                            "IsOnline" to isOnline,
                             "LastOnline" to lastOnline,
                             "Picture" to picture
                         )
 
+                        //Lo añade a la colección
                         db.collection("User").add(user)
                             .addOnSuccessListener {
                                 mAuth.createUserWithEmailAndPassword(mail, password)
@@ -99,8 +101,8 @@ class UserViewModel: ViewModel() {
                 // Manejar error en caso de falla en la subida de imagen
                 Log.d(ContentValues.TAG, "No se ha podido subir la imagen", exception)
             }
-        } else {
-            //Get TownId
+        } else { //Sin imagen de perfil
+            //Obtener TownId
             val townCol = db.collection("Town")
             townCol.whereEqualTo("Name", town).get()
                 .addOnSuccessListener { towns ->
@@ -109,7 +111,7 @@ class UserViewModel: ViewModel() {
                         townId = town.id
                     }
 
-                    //Create new User with the data obtained
+                    //Crea nuevo usuario con los datos obtenidos
                     val user = hashMapOf(
                         "User" to userName,
                         "Password" to encryptedPassword,
@@ -119,11 +121,11 @@ class UserViewModel: ViewModel() {
                         "Phone" to phone,
                         "TownId" to townId,
                         "RegisterDate" to registerDate,
-                        "IsOnline" to isOnline,
                         "LastOnline" to lastOnline,
                         "Picture" to picture
                     )
 
+                    //Lo añade a la colección
                     usersRef.add(user)
                         .addOnSuccessListener {
                             mAuth.createUserWithEmailAndPassword(mail, password)
@@ -149,6 +151,7 @@ class UserViewModel: ViewModel() {
         return isUserRegisteredSuccessfully
     }
 
+    //Función para actualizar datos de usuarios
     fun updateUser(
         userId: String,
         userName: String,
@@ -159,7 +162,7 @@ class UserViewModel: ViewModel() {
         imageUri: Uri?): LiveData<Boolean>
     {
         val isUserUpdatedSuccessfully = MutableLiveData<Boolean>()
-        //Obtenemos el townId
+        //Obtenemos el TownId
         var townId = ""
         var picture = ""
         val townCol = db.collection("Town")
@@ -219,6 +222,7 @@ class UserViewModel: ViewModel() {
         return isUserUpdatedSuccessfully
     }
 
+    //Función que comprueba si el correo electrónico introducido ya existe en la base de datos
     fun isMailAlreadyRegistered(email: String, callback: (Boolean) -> Unit) {
         var registered = false
         val userCol = db.collection("User")
@@ -236,8 +240,8 @@ class UserViewModel: ViewModel() {
             }
     }
 
+    //Función para actualizar el campo LastOnline al iniciar sesión
     fun logIn(email: String, callback: (String) -> Unit) {
-        //Update user field IsOnline to true and LastOnline with actual date
         val userCol = db.collection("User")
         userCol.whereEqualTo("Mail", email).get()
             .addOnSuccessListener { users ->
@@ -247,7 +251,6 @@ class UserViewModel: ViewModel() {
                 }
                 userCol.document(userId).set(
                     hashMapOf(
-                        "IsOnline" to true,
                         "LastOnline" to Timestamp(Date())
                     ), SetOptions.merge()
                 ).addOnSuccessListener {

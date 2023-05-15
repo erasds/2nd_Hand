@@ -14,11 +14,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var userRef: User
-    var userId: String? = ""
-
     private val mAuth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
+
+    private lateinit var userRef: User
+    var userId: String? = ""
 
     private lateinit var viewModel: UserViewModel
 
@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[UserViewModel::class.java]
 
+        //Comprobamos email y contraseña mediante Firebase Auth
         binding.btnLogIn.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPass.text.toString()
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                         viewModel.logIn(email) { user ->
                             userId = user
                             userRef = User(user)
-                            //Start HomeActivity and send UserId
+                            //Si es correcto iniciamos HomeActivity y le pasamos la referencia del usuario
                             val intent = Intent(this, HomeActivity::class.java).apply {
                                 putExtra("object", userRef)
                             }
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
                 }
         }
 
+        //Iniciamos la actividad de registro
         binding.tvSignIn.setOnClickListener {
             startActivity(Intent(this, SignInActivity::class.java))
         }

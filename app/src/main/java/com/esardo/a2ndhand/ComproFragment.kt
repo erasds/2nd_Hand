@@ -40,14 +40,14 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentComproBinding.inflate(inflater, container, false)
+        //Recibimos la referencia del usuario que ha iniciado sesión
         val userRef = activity?.intent?.getSerializableExtra("object") as? User
 
         viewModel = ViewModelProvider(this)[ProductViewModel::class.java]
         viewModel.getAllProductObserver()
-        //This will observe the productList of the ProductViewModel class and load the necessary data into the recyclerview
-        //everytime that the fragment is loaded
+        //Observamos el productList del ProductViewModel y cargamos los datos en el recyclerview
         viewModel.productLiveData.observe(viewLifecycleOwner){
             productList.clear()
             if (it != null) {
@@ -56,15 +56,18 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
             adapter.notifyDataSetChanged()
         }
 
+        //Guardamos el UserId de la referencia
         val userID = userRef?.id
         if (userID != null) {
             userId = userID
         }
+
+        //Llamamos a la función getAllProducts para que se llene la lista de productos
         viewModel.getAllProducts(isSell, userId)
 
-        //this will get the text of the searchView and set it as the query variable
+        //Este método coge el texto del searchView y lo envía en la variable query
         binding.svProduct.setOnQueryTextListener(this)
-        //When SearchView is closed all products load again
+        //Cuando se limpia el SearchView se vuelven a cargar todos los productos
         binding.svProduct.setOnCloseListener {
             if (userId != null) {
                 viewModel.getAllProducts(isSell, userId)
@@ -72,10 +75,12 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
             true
         }
 
+        //Muestra el diálogo para seleccionar un filtro
         binding.btnFilter.setOnClickListener {
             showDialog()
         }
 
+        //Inicia la actividad UploadProduct y le pasa el userId y la variable isSell
         binding.btnNewProduct.setOnClickListener {
             //Start UploadProduct, send userId and set isSell as true
             val intent = Intent(activity, UploadProduct::class.java)
@@ -132,7 +137,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         })
     }
 
-    //Setups the RecyclerView
+    //Setups RecyclerView
     private fun initRecyclerView() {
         adapter = ProductAdapter(viewModel, userId, productList) { product -> loadProduct(product) }
         recyclerView = binding.rvCompro
@@ -140,20 +145,20 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         recyclerView.adapter = adapter
     }
 
-    //Load the product Fragment
+    //Carga el detalle del producto cuando se pulsa en una de las tarjetas
     private fun loadProduct(product: Product) {
         val bundle = Bundle()
         bundle.putSerializable("objeto", product)
-        // Navigates to ProductFragment and pass the bundle as an argument
+        //Navega al ProductFragment y le pasa el bundle como argumento
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_comproFragment_to_productFragment, bundle)
     }
 
-    //It controls when the text of the SearchView changes
+    //Controla si cambia el texto del SearchView
     override fun onQueryTextChange(newText:String?):Boolean {
         return true
     }
-
+    //Envía el texto del SearchView a la función que filtra por dicho texto
     override fun onQueryTextSubmit(query: String?): Boolean {
         if(!query.isNullOrEmpty()){
             viewModel.getProductsByName(query)

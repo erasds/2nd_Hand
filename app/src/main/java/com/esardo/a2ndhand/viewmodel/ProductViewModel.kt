@@ -323,7 +323,9 @@ class ProductViewModel: ViewModel() {
         return isProductUploadedSuccessfully
     }
 
+    //Función que obtiene todos los productos filtrados por si son en venta o en demanda
     fun getAllProducts(isSell: Boolean, userId: String) {
+        //Primero comprueba los favoritos del usuario que ha iniciado sesión
         val favCol = db.collection("User")
             .document(userId)
             .collection("Favorite")
@@ -338,6 +340,7 @@ class ProductViewModel: ViewModel() {
         }.addOnFailureListener { exception ->
             Log.w(TAG, "Error cargando favoritos: ", exception)
         }
+        //Después obtiene los productos filtrando por isSell
         val productCol = db.collection("Product")
         val query = productCol.whereEqualTo("IsSell", isSell)
         query.addSnapshotListener { documents, exception ->
@@ -350,6 +353,7 @@ class ProductViewModel: ViewModel() {
                     for (document in documents) {
                         val id = document.id
                         val data = document.toObject<Product>()
+                        //A los que están en la lista de favoritos les marca el checkbox
                         if (favoriteList.contains(id)) data.isChecked = true
                         val name = data.Name
                         val description = data.Description
@@ -401,14 +405,17 @@ class ProductViewModel: ViewModel() {
         }
     }
 
+    //Obtiene los productos filtrando por el texto del SearchView
     fun getProductsByName(query: String) {
         val filteredList: List<Product> = productList.filter { it.Name.contains(query, ignoreCase = true) }
         productLiveData.postValue(filteredList)
     }
 
+    //Obtiene las categorías para poder filtrar los productos
     suspend fun getCategories(): List<String> {
         val catCol = db.collection("Category").orderBy("Name").get().await()
         val categories = mutableListOf<String>()
+        //Además de las categorías añadimos estas 3 opciones
         val allProducts = "Todos los productos"
         val publishDate = "Novedades"
         val townId = "Cerca de ti"
@@ -425,6 +432,7 @@ class ProductViewModel: ViewModel() {
         return categories
     }
 
+    //Aplica el filtro a la lista de productos según lo que hayan seleccionado
     fun getProductsByFilter(category: String, userId: String, isSell: Boolean) {
         val favCol = db.collection("User")
             .document(userId)
@@ -443,9 +451,11 @@ class ProductViewModel: ViewModel() {
 
         val productCol = db.collection("Product")
         var query: Query? = null
+        //Si contiene Todos tiene que cargar todos los productos
         if(category.contains("Todos")) {
             //Llamamos a la función que carga todos los productos
             getAllProducts(isSell, userId)
+        //Si contiene Cerca hay que sacar los de la ciudad del usuario que ha iniciado sesión
         } else if(category.contains("Cerca")) {
             //Primero obtenemos el TownId del usuario
             var townId = ""
@@ -516,6 +526,7 @@ class ProductViewModel: ViewModel() {
 
                 }
             }
+        //Si contiene Novedades hay que ordenarlos por los más recientes
         } else if(category.contains("Novedades")) {
             //Ordenamos por la fecha de publicación más reciente
             query = productCol.whereEqualTo("IsSell", isSell).orderBy("PublishDate", Query.Direction.DESCENDING)
@@ -654,6 +665,7 @@ class ProductViewModel: ViewModel() {
         }
     }
 
+    //Elimina un producto de la colección Favorite al desmarcar el checkbox
     fun deleteFavorite(productId: String, userId: String) {
         val favCol = db.collection("User").document(userId)
             .collection("Favorite")
@@ -673,6 +685,7 @@ class ProductViewModel: ViewModel() {
         }
     }
 
+    //Añade un producto a la colección Favorite al marcar el checkbox
     fun addFavorite(productId: String, userId: String) {
         val favorite = hashMapOf(
             "ProductId" to productId
@@ -689,6 +702,7 @@ class ProductViewModel: ViewModel() {
             }
     }
 
+    //Función que carga los productos que tenga marcados como favoritos el usuario que ha iniciado sesión
     fun getMyFavorites(userId: String) {
         productList.clear()
         val favCol = db.collection("User").document(userId)
@@ -703,7 +717,7 @@ class ProductViewModel: ViewModel() {
             }
 
             if(productIdList.isNotEmpty()) {
-                // Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección "productDetails"
+                // Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección Product
                 db.collection("Product")
                     .whereIn(FieldPath.documentId(), productIdList)
                     .get()
@@ -747,14 +761,14 @@ class ProductViewModel: ViewModel() {
 
                     }.addOnFailureListener { exception ->
                         Log.d(TAG, "Error getting products: ", exception)
-                        // Si ocurre un error, podemos devolver una lista vacía o manejar el error de otra manera
+                        // Si ocurre un error, se devuelve una lista vacía
                         productLiveData.postValue(emptyList())
                     }
             }
 
         }.addOnFailureListener { exception ->
             Log.d(TAG, "Error getting product IDs: ", exception)
-            // Si ocurre un error, podemos devolver una lista vacía o manejar el error de otra manera
+            // Si ocurre un error, se devuelve una lista vacía
             productLiveData.postValue(emptyList())
         }
 

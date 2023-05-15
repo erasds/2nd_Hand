@@ -11,28 +11,27 @@ import com.esardo.a2ndhand.model.Message
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val ITEM_SENT = 1
+private const val  ITEM_RECEIVED= 2
 class MessageAdapter(
     private val userId: String,
     private val messageList: List<Message>
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val ITEM_SENDED = 1
-    private val  ITEM_RECEIVED= 2
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == 1) {
+        return if(viewType == 1) {
             val layoutInflater = LayoutInflater.from(parent.context)
-            return SendedViewHolder(layoutInflater.inflate(R.layout.item_message_sended, parent, false))
+            SentViewHolder(layoutInflater.inflate(R.layout.item_message_sended, parent, false))
         } else {
             val layoutInflater = LayoutInflater.from(parent.context)
-            return ReceivedViewHolder(layoutInflater.inflate(R.layout.item_message_received, parent, false))
+            ReceivedViewHolder(layoutInflater.inflate(R.layout.item_message_received, parent, false))
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val currentMessage = messageList[position]
         return if(userId == currentMessage.FromUser) {
-            ITEM_SENDED
+            ITEM_SENT
         } else {
             ITEM_RECEIVED
         }
@@ -41,8 +40,8 @@ class MessageAdapter(
     override fun getItemCount(): Int = messageList.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder.javaClass == SendedViewHolder::class.java) {
-            val viewHolder = holder as SendedViewHolder
+        if(holder.javaClass == SentViewHolder::class.java) {
+            val viewHolder = holder as SentViewHolder
             val item = messageList[position]
             viewHolder.bind(item, userId)
         } else {
@@ -53,14 +52,14 @@ class MessageAdapter(
 
     }
 
-    inner class SendedViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class SentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding = ItemMessageSendedBinding.bind(view)
         fun bind (message: Message, userId: String) {
             if (message.FromUser == userId) {
                 // Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
-                val dateString = dateFormat.format(message.Date?.toDate())
+                val dateString = message.Date?.toDate()?.let { dateFormat.format(it) }
                 binding.tvDate.text = dateString
                 binding.tvMessage.text = message.Text
             }
@@ -74,7 +73,7 @@ class MessageAdapter(
                 // Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
-                val dateString = dateFormat.format(message.Date?.toDate())
+                val dateString = message.Date?.toDate()?.let { dateFormat.format(it) }
                 binding.tvDate.text = dateString
                 binding.tvMessage.text = message.Text
             }
