@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatAdapter(
-    private val userId: String,
     private val chatList: List<Chat>,
     private val loadMessages: (Chat) -> Unit
 ) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
@@ -29,13 +28,13 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = chatList[position]
-        holder.bind(item, userId)
+        holder.bind(item)
     }
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding = ItemChatBinding.bind(view)
 
-        // Binds elements to it's value
+        //Enlaza los elementos con su valor
         private val ivPicture = binding.ivPicture
         private val tvUserName = binding.tvUserName
         private val tvLastMsg = binding.tvLastMsg
@@ -45,7 +44,7 @@ class ChatAdapter(
         private var text: String? = ""
         private var date: Timestamp? = null
 
-        fun bind (chat: Chat, userId: String) {
+        fun bind (chat: Chat) {
             val db = FirebaseFirestore.getInstance()
             val userCol = db.collection("User").document(chat.OtherUser)//.collection("Chat").document(chat.id)
             userCol.get().addOnSuccessListener { otherUser ->
@@ -53,27 +52,26 @@ class ChatAdapter(
                     otherUserPicture = otherUser.getString("Picture")
                     otherUserName = otherUser.getString("User")
                 }
+
+                text = chat.Message.Text
+                date = chat.Message.Date
+
+                //With Picasso library this will load the User image, an image to show while data is loading,
+                // and an image to show if there's an error loading the User image
+                if(otherUserPicture != "") {
+                    Picasso.get().load(otherUserPicture).placeholder(R.drawable.profile).error(R.drawable.profile).into(ivPicture)
+                }
+                tvUserName.text = otherUserName
+                tvLastMsg.text = text
+                // Formatea la fecha como un String legible
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
+                val dateString = date?.toDate()?.let { dateFormat.format(it) }
+                tvDate.text = dateString
+
+                //To load MessagesFragment with the data of the item clicked
+                itemView.setOnClickListener { loadMessages(chat) }
             }
-
-            text = chat.Message.Text
-            date = chat.Message.Date
-
-            //With Picasso library this will load the User image, an image to show while data is loading,
-            // and an image to show if there's an error loading the User image
-            if(otherUserPicture != "") {
-                Picasso.get().load(otherUserPicture).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(ivPicture)
-            }
-            tvUserName.text = otherUserName
-            tvLastMsg.text = text
-            // Formatea la fecha como un String legible
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-            dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
-            val dateString = dateFormat.format(date?.toDate())
-            tvDate.text = dateString
-
-            //To load MessagesFragment with the data of the item clicked
-            itemView.setOnClickListener { loadMessages(chat) }
         }
-
     }
 }

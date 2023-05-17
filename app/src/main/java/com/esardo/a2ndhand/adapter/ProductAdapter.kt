@@ -32,17 +32,17 @@ class ProductAdapter(
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding = ItemProductBinding.bind(view)
 
-        // Binds elements to it's value
-        val tvName = binding.tvName
-        val tvPrice = binding.tvPrice
-        val chxFav = binding.chxFav
+        //Enlaza los elementos con su valor
+        private val tvName = binding.tvName
+        private val tvPrice = binding.tvPrice
+        private val chxFav = binding.chxFav
 
         //With Picasso library this will load the Product image, an image to show while data is loading,
         // and an image to show if there's an error loading the Product image
         fun bind (product: Product, userId: String) {
             val productPic = product.Picture.Pic1
             if(productPic != "") {
-                Picasso.get().load(productPic).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.ivImage)
+                Picasso.get().load(productPic).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.ivImage)
             }
             tvName.text = product.Name
             //Format price erasing decimals if it's value is 0

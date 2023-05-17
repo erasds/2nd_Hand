@@ -16,7 +16,7 @@ import com.esardo.a2ndhand.viewmodel.ChatViewModel
 
 class ChatsFragment : Fragment() {
     private lateinit var _binding: FragmentChatsBinding
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ChatAdapter
@@ -28,15 +28,14 @@ class ChatsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentChatsBinding.inflate(inflater, container, false)
-        //Obtain our own User reference
+        //Recibimos la referencia del usuario que ha iniciado sesión
         val userRef = activity?.intent?.getSerializableExtra("object") as? User
 
         viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
         viewModel.getAllChatObserver()
-        //This will observe the chatList of the ChatViewModel class and load the necessary data into the recyclerview
-        //everytime that the fragment is loaded
+        //Observamos el chatList del ChatViewModel y cargamos los datos en el recyclerview
         viewModel.chatLiveData.observe(viewLifecycleOwner){
             chatList.clear()
             if (it != null) {
@@ -45,32 +44,33 @@ class ChatsFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
 
+        //Guardamos el UserId de la referencia
         val userID = userRef?.id
         if (userID != null) {
             userId = userID
         }
 
+        //Llamamos a la función getAllChats para que se llene la lista de chats
         viewModel.getAllChats(userId)
 
         initRecyclerView()
         return binding.root
     }
 
-    //Setups the RecyclerView
+    //Setups RecyclerView
     private fun initRecyclerView() {
-        adapter = ChatAdapter(userId, chatList) { chat -> loadMessages(chat) }
+        adapter = ChatAdapter(chatList) { chat -> loadMessages(chat) }
         recyclerView = binding.rvChats
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
     }
 
-    //Load the messages Fragment
+    //Carga el fragmento de los mensajes
     private fun loadMessages(chat: Chat) {
         val bundle = Bundle()
         bundle.putSerializable("objeto", chat)
-        // Navigates to MessagesFragment and pass the bundle as an argument
+        //Navega al MessagesFragment y le pasa el bundle como argumento
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_chatsFragment_to_messagesFragment, bundle)
     }
-
 }
