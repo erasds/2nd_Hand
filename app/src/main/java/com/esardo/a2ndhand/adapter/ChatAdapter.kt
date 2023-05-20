@@ -42,7 +42,7 @@ class ChatAdapter(
         private var otherUserPicture: String? = ""
         private var otherUserName: String? = ""
         private var text: String? = ""
-        private var date: Timestamp? = null
+        private var date: Date? = null
 
         fun bind (chat: Chat) {
             val db = FirebaseFirestore.getInstance()
@@ -66,7 +66,7 @@ class ChatAdapter(
                 // Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
-                val dateString = date?.toDate()?.let { dateFormat.format(it) }
+                val dateString = date?.let { dateFormat.format(it) }
                 tvDate.text = dateString
 
                 //To load MessagesFragment with the data of the item clicked

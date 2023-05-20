@@ -69,9 +69,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         binding.svProduct.setOnQueryTextListener(this)
         //Cuando se limpia el SearchView se vuelven a cargar todos los productos
         binding.svProduct.setOnCloseListener {
-            if (userId != null) {
-                viewModel.getAllProducts(isSell, userId)
-            }
+            viewModel.getAllProducts(isSell, userId)
             true
         }
 

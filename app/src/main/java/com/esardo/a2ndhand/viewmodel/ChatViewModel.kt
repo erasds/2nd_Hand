@@ -40,7 +40,7 @@ class ChatViewModel: ViewModel() {
                         val id = document.id
                         val data = document.toObject<Chat>()
                         val otherUser = data.OtherUser
-                        val chat = Chat(id, otherUser, Message("", "", "", "", Timestamp(Date())))
+                        val chat = Chat(id, otherUser, Message("", "", "", "", Date()))
                         chatList.add(chat)
                     }
 
@@ -90,7 +90,7 @@ class ChatViewModel: ViewModel() {
                         val id = document.id
                         val data = document.toObject<Chat>()
                         val otherUser = data.OtherUser
-                        chat = Chat(id, otherUser, Message("", "", "", "", null))
+                        chat = Chat(id, otherUser, Message("", "", "", "", Date()))
                     }
 
                     //Si el chat ya existe ya podemos devolverlo
@@ -107,7 +107,7 @@ class ChatViewModel: ViewModel() {
                             val documentId = documentReference.id
                             chatCol.document(documentId).get()
                                 .addOnSuccessListener { documentSnapshot ->
-                                    chat = Chat(documentId, productUserId, Message("", "", "", "", null))
+                                    chat = Chat(documentId, productUserId, Message("", "", "", "", Date()))
 
                                     //Chat creation completed
                                     Log.d(ContentValues.TAG, "Chat creado para el usuario logeado")

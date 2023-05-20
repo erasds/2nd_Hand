@@ -15,7 +15,7 @@
             android:id="@+id/ivPictures"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:src="@drawable/prueba"
+            android:src="@drawable/logo"
             android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,91 +39,56 @@
             app:tabGravity="center"
             app:layout_constraintTop_toBottomOf="@+id/ivPictures"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvProdName"/>
-
-        <TextView
-            android:id="@+id/tvProdName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre Producto"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvPrice"/>
-
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="150 €"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/tvProdName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvCategory"/>
-
-        <TextView
-            android:id="@+id/tvCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Categoría"
-            app:layout_constraintTop_toBottomOf="@+id/tvPrice"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
-
-        <TextView
-            android:id="@+id/tvPublishDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="01/05/2023"
-            app:layout_constraintTop_toBottomOf="@+id/tvCategory"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
-
-        <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Descripción sobre las características del producto"
-            app:layout_constraintTop_toBottomOf="@+id/tvPublishDate"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/llSeller"/>
+            app:layout_constraintBottom_toTopOf="@+id/llProdData"/>
 
         <LinearLayout
-            android:id="@+id/llSeller"
+            android:id="@+id/llProdData"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDescription">
-
-            <ImageView
-                android:id="@+id/ivProfilePicture"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:src="@drawable/prueba"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/cvUser">
 
             <LinearLayout
-                android:id="@+id/llSellerInfo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
                 <LinearLayout
-                    android:id="@+id/llEditProd"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tvUserName"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
+                        android:id="@+id/tvProdName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Nombre Producto"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvPrice"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Nombre Usuario"
-                        android:textStyle="bold"
-                        android:gravity="bottom"/>
+                        android:text="150 €"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llProdIcons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/btnEditProduct"
@@ -133,51 +98,136 @@
                         android:layout_marginEnd="10dp"
                         android:scaleType="fitCenter"
                         android:background="@color/white"
-                        android:src="@drawable/icon_edit_product"/>
+                        android:src="@drawable/icon_edit_product" />
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvUbication"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Ciudad"/>
-
-                <LinearLayout
-                    android:id="@+id/llRating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvRating"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:text="1000 puntos de usuario" />
-
-                    <TextView
-                        android:id="@+id/tvSeeVotes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageButton
+                        android:id="@+id/btnDeleteProduct"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
-                        android:text="[ Ver valoraciones ]" />
+                        android:scaleType="fitCenter"
+                        android:background="@color/white"
+                        android:src="@drawable/icon_delete_product"/>
 
                 </LinearLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Categoría"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:id="@+id/tvPublishDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01/05/2023"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"/>
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descripción sobre las características del producto"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"/>
+
         </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvUser"
+            app:cardElevation="5dp"
+            android:layout_width="match_parent"
+            app:cardCornerRadius="8dp"
+            app:cardUseCompatPadding="true"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llProdData"
+            app:layout_constraintBottom_toTopOf="@+id/btnSendMessage">
+
+            <LinearLayout
+                android:id="@+id/llSeller"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfilePicture"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/profile"
+                    android:scaleType="centerCrop"/>
+
+                <LinearLayout
+                    android:id="@+id/llSellerInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvUserName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Nombre Usuario"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvUbication"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Ciudad"/>
+
+                    <LinearLayout
+                        android:id="@+id/llRating"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvRating"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="1000 puntos de usuario" />
+
+                        <TextView
+                            android:id="@+id/tvSeeVotes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:text="[ Ver valoraciones ]" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Enviar mensaje"
+            android:backgroundTint="@color/purple_hand"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llSeller"
+            app:layout_constraintTop_toBottomOf="@+id/cvUser"
             app:layout_constraintBottom_toBottomOf="parent"/>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

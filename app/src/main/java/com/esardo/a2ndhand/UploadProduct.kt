@@ -47,6 +47,7 @@ class UploadProduct : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[ProductViewModel::class.java]
 
+        var pictureId = ""
         //Saber desde donde se ha abierto la actividad
         var userId = ""
         var isSell = false
@@ -85,6 +86,7 @@ class UploadProduct : AppCompatActivity() {
                                 val picturesCol = productCol.collection("Picture")
                                 picturesCol.get().addOnSuccessListener { documents ->
                                     for (document in documents) {
+                                        pictureId = document.id
                                         val pic1 = document.getString("Pic1")
                                         if(pic1 != "") Picasso.get().load(pic1).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn1)
                                         val pic2 =  document.getString("Pic2")
@@ -142,6 +144,7 @@ class UploadProduct : AppCompatActivity() {
                         price,
                         category,
                         imageUris,
+                        pictureId,
                         context
                     ).observe(this) { isFinished ->
                         if(isFinished) {

@@ -1,7 +1,7 @@
 package com.esardo.a2ndhand.model
 
-import com.google.firebase.Timestamp
 import java.io.Serializable
+import java.util.*
 
 data class Chat(
     val id: String, //Identificador de la colección, se genera solo
@@ -10,16 +10,16 @@ data class Chat(
 ) : Serializable
 {
     // Constructor without arguments
-    constructor() : this("", "", Message("", "", "", "", null))
+    constructor() : this("", "", Message("", "", "", "", Date()))
 }
 data class Message(
     var id: String, //Identificador de la subcolección, se genera solo
     var Text: String, //Contenido del mensaje
     var FromUser: String, //Id del usuario que envía el mensaje (al mostrarlo será el nombre)
     var ToUser: String, //Id del usuario que recibe el mensaje
-    var Date: Timestamp? //Fecha del mensaje
+    var Date: Date //Fecha del mensaje
 ) : Serializable
 {
     // Constructor without arguments
-    constructor() : this("", "", "", "", null)
+    constructor() : this("", "", "", "", Date())
 }

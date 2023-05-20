@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esardo.a2ndhand.adapter.MessageAdapter
 import com.esardo.a2ndhand.databinding.FragmentMessagesBinding
@@ -27,45 +26,46 @@ class MessagesFragment : Fragment() {
 
     private val messageList = mutableListOf<Message>()
     private lateinit var userId: String
-
     private lateinit var chat: Chat
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMessagesBinding.inflate(inflater, container, false)
-        //Obtain our own User reference
+        //Recibimos la referencia del usuario
         val userRef = activity?.intent?.getSerializableExtra("object") as? User
-
-        // Obtains object Chat from the arguments
+        //Recibimos el objeto Chat de los argumentos
         chat = requireArguments().getSerializable("objeto") as Chat
 
         viewModel = ViewModelProvider(this)[MessageViewModel::class.java]
         viewModel.getAllMessageObserver()
-        //This will observe the messageList of the MessageViewModel class and load the necessary data into the recyclerview
-        //everytime that the fragment is loaded
+        //Observamos el messageList del MessageViewModel y cargamos los datos en el recyclerview
         viewModel.messageLiveData.observe(viewLifecycleOwner){
             messageList.clear()
             if (it != null) {
                 messageList.addAll(it)
+                binding.rvMessage.scrollToPosition(adapter.itemCount - 1)
             }
             adapter.notifyDataSetChanged()
         }
 
+        //Guardamos el UserId de la referencia
         val userID = userRef?.id
         if (userID != null) {
             userId = userID
         }
 
+        //Llamamos a la función getAllMessages para que se llene la lista de mensajes
         viewModel.getAllMessages(userId, chat.id)
 
+        //Cuando se pulse el botón de enviar se llama a la función que lo insertará en la base de datos
         binding.ivSend.setOnClickListener {
             if(!binding.etMessage.text.isNullOrEmpty()) {
                 val text = binding.etMessage.text.toString()
                 val fromUser = userId
                 val toUser = chat.OtherUser
-                val date = Timestamp(Date())
+                val date = Date()
                 val message = Message("", text, fromUser, toUser, date)
                 viewModel.sendMessage(userId, chat.id, message)
             }
@@ -76,12 +76,11 @@ class MessagesFragment : Fragment() {
         return binding.root
     }
 
-    //Setups the RecyclerView
+    //Setups RecyclerView
     private fun initRecyclerView() {
         adapter = MessageAdapter(userId, messageList)
         recyclerView = binding.rvMessage
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
     }
-
 }

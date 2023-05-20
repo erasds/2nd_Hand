@@ -14,10 +14,12 @@
             android:id="@+id/hsvImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/etProduct">
+            app:layout_constraintBottom_toTopOf="@+id/tiProduct">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -28,7 +30,7 @@
                     android:id="@+id/iBtn1"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/prueba"
+                    android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -36,7 +38,7 @@
                     android:id="@+id/iBtn2"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/prueba"
+                    android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -44,7 +46,7 @@
                     android:id="@+id/iBtn3"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/prueba"
+                    android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -52,7 +54,7 @@
                     android:id="@+id/iBtn4"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/prueba"
+                    android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -60,7 +62,7 @@
                     android:id="@+id/iBtn5"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:src="@drawable/prueba"
+                    android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -68,63 +70,122 @@
 
         </HorizontalScrollView>
 
-        <EditText
-            android:id="@+id/etProduct"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiProduct"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:hint="Nombre Producto*"
+            app:hintTextColor="@color/purple_hand"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/purple_hand"
             app:layout_constraintTop_toBottomOf="@+id/hsvImages"
-            app:layout_constraintBottom_toTopOf="@+id/etDescription"/>
+            app:layout_constraintBottom_toTopOf="@+id/tiDescription"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/etDescription"
-            android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiDescription"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
             android:hint="Descripción"
-            app:layout_constraintTop_toBottomOf="@+id/etProduct"
-            app:layout_constraintBottom_toTopOf="@+id/etPrice"/>
+            app:hintTextColor="@color/purple_hand"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/purple_hand"
+            app:layout_constraintTop_toBottomOf="@+id/tiProduct"
+            app:layout_constraintBottom_toTopOf="@+id/tiPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/etPrice"
-            android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiPrice"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
             android:hint="Precio*"
             android:inputType="numberDecimal"
-            app:layout_constraintTop_toBottomOf="@+id/etDescription"
-            app:layout_constraintBottom_toTopOf="@+id/etCategory"/>
+            app:hintTextColor="@color/purple_hand"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/purple_hand"
+            app:layout_constraintTop_toBottomOf="@+id/tiDescription"
+            app:layout_constraintBottom_toTopOf="@+id/tiCategory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/etCategory"
-            android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tiCategory"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
             android:hint="Categoría*"
-            app:layout_constraintTop_toBottomOf="@+id/etPrice"
-            app:layout_constraintBottom_toTopOf="@+id/btnUpload"/>
+            app:hintTextColor="@color/purple_hand"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/purple_hand"
+            app:layout_constraintTop_toBottomOf="@+id/tiPrice"
+            app:layout_constraintBottom_toTopOf="@+id/btnUpload"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Subir producto"
+            android:backgroundTint="@color/purple_hand"
+            android:layout_margin="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etCategory"
+            app:layout_constraintTop_toBottomOf="@+id/tiCategory"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/ivSuccess"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:srcCompat="@raw/success"
+            app:lottie_loop="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </ScrollView>

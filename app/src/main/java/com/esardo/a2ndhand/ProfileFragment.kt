@@ -49,7 +49,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         //Recibimos la referencia del usuario
         val userRef = activity?.intent?.getSerializableExtra("object") as? User

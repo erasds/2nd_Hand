@@ -40,7 +40,9 @@ class ProductAdapter(
         //With Picasso library this will load the Product image, an image to show while data is loading,
         // and an image to show if there's an error loading the Product image
         fun bind (product: Product, userId: String) {
-            val productPic = product.Picture.Pic1
+            //Restablecer la imagen antes de cargar la nueva
+            binding.ivImage.setImageResource(R.drawable.logo)
+            val productPic = product.Picture!!.Pic1
             if(productPic != "") {
                 Picasso.get().load(productPic).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.ivImage)
             }
