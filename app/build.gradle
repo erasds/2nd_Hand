@@ -52,6 +52,7 @@ dependencies {
 
     //Styles
     implementation 'com.google.android.material:material:1.4.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     //Navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.2'
@@ -59,9 +60,6 @@ dependencies {
 
     //PICASSO
     implementation 'com.squareup.picasso:picasso:2.8'
-
-    //Para usar ImageView redondos
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     //ViewPager
     implementation 'com.github.bumptech.glide:glide:4.12.0'

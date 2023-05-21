@@ -1,6 +1,5 @@
 package com.esardo.a2ndhand
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -18,14 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esardo.a2ndhand.adapter.ItemAdapter
 import com.esardo.a2ndhand.databinding.ActivityUploadProductBinding
-import com.esardo.a2ndhand.model.Picture
-import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.CategoryViewModel
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 
@@ -48,7 +43,7 @@ class UploadProduct : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[ProductViewModel::class.java]
 
         var pictureId = ""
-        //Saber desde donde se ha abierto la actividad
+        //Para saber desde donde se ha abierto la actividad
         var userId = ""
         var isSell = false
         val userRefV = intent.getSerializableExtra("vendo_fragment") as User?
@@ -88,15 +83,15 @@ class UploadProduct : AppCompatActivity() {
                                     for (document in documents) {
                                         pictureId = document.id
                                         val pic1 = document.getString("Pic1")
-                                        if(pic1 != "") Picasso.get().load(pic1).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn1)
+                                        if(pic1 != "") Picasso.get().load(pic1).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.iBtn1)
                                         val pic2 =  document.getString("Pic2")
-                                        if(pic2 != "") Picasso.get().load(pic2).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn2)
+                                        if(pic2 != "") Picasso.get().load(pic2).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.iBtn2)
                                         val pic3 =  document.getString("Pic3")
-                                        if(pic3 != "") Picasso.get().load(pic3).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn3)
+                                        if(pic3 != "") Picasso.get().load(pic3).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.iBtn3)
                                         val pic4 =  document.getString("Pic4")
-                                        if(pic4 != "") Picasso.get().load(pic4).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn4)
+                                        if(pic4 != "") Picasso.get().load(pic4).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.iBtn4)
                                         val pic5 =  document.getString("Pic5")
-                                        if(pic5 != "") Picasso.get().load(pic5).placeholder(R.drawable.prueba).error(R.drawable.prueba).into(binding.iBtn5)
+                                        if(pic5 != "") Picasso.get().load(pic5).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.iBtn5)
                                     }
                                 }
 
@@ -107,13 +102,11 @@ class UploadProduct : AppCompatActivity() {
 
                 //Cambiamos el texto del botón
                 binding.btnUpload.text = "Actualizar"
-
-                //Mostramos la opción de eliminar producto?
             }
         }
 
         val onClickListener = View.OnClickListener { view ->
-            // Acción que se realizará cuando se haga clic en cualquiera de los botones
+            //Cuando se haga clic en cualquiera de los botones
             selectedButtonId = view.id
             selectImage(selectedButtonId)
         }
@@ -124,12 +117,14 @@ class UploadProduct : AppCompatActivity() {
         binding.iBtn4.setOnClickListener(onClickListener)
         binding.iBtn5.setOnClickListener(onClickListener)
 
+        //Lanza el diálogo para elegir la categoría
         binding.etCategory.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 showDialog()
             }
         }
 
+        //Al pulsarlo se guardan los datos y se cierra la actividad
         binding.btnUpload.setOnClickListener {
             val name = binding.etProduct.text.toString()
             val description = binding.etDescription.text.toString()
@@ -175,7 +170,7 @@ class UploadProduct : AppCompatActivity() {
         }
     }
 
-    //To select product images
+    //Para seleccionar las imágenes del teléfono
     private fun selectImage(buttonId: Int) {
         selectedButtonId = buttonId
         val intent = Intent(Intent.ACTION_PICK)
@@ -183,13 +178,13 @@ class UploadProduct : AppCompatActivity() {
         intent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
     }
-    //To save the image path into a list
+    //Guarda el path a las imágenes en una lista
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == RESULT_OK && data != null && data.data != null) {
             imageUris.add(data.data!!)
-            //Convierte la Uri en un Bitmal para la miniatura
+            //Convierte la Uri en un Bitmap para la miniatura
             val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(contentResolver, data.data)
             //Busca el botón correspondiente y configura el Bitmap como fuente de la imagen
             when (selectedButtonId) {
@@ -202,6 +197,7 @@ class UploadProduct : AppCompatActivity() {
         }
     }
 
+    //Mustra el diálogo
     private fun showDialog() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_selection)
@@ -248,6 +244,7 @@ class UploadProduct : AppCompatActivity() {
         })
     }
 
+    //Para darle formato a los mensajes que se muestran por pantalla
     private fun showMessage(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }

@@ -14,8 +14,8 @@
             android:id="@+id/hsvImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="@dimen/twenty"
+            android:layout_marginBottom="@dimen/ten"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,40 +28,40 @@
 
                 <ImageButton
                     android:id="@+id/iBtn1"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/one_twenty"
+                    android:layout_height="@dimen/one_twenty"
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
                 <ImageButton
                     android:id="@+id/iBtn2"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/one_twenty"
+                    android:layout_height="@dimen/one_twenty"
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
                 <ImageButton
                     android:id="@+id/iBtn3"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/one_twenty"
+                    android:layout_height="@dimen/one_twenty"
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
                 <ImageButton
                     android:id="@+id/iBtn4"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/one_twenty"
+                    android:layout_height="@dimen/one_twenty"
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
                 <ImageButton
                     android:id="@+id/iBtn5"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/one_twenty"
+                    android:layout_height="@dimen/one_twenty"
                     android:src="@drawable/logo"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
@@ -72,12 +72,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiProduct"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="Nombre Producto*"
+            android:layout_marginTop="@dimen/ten"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginEnd="@dimen/ten"
+            android:hint="@string/prod_name"
             app:hintTextColor="@color/purple_hand"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/purple_hand"
@@ -95,12 +95,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiDescription"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="Descripción"
+            android:layout_marginTop="@dimen/ten"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginEnd="@dimen/ten"
+            android:hint="@string/description"
             app:hintTextColor="@color/purple_hand"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/purple_hand"
@@ -118,12 +118,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiPrice"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="Precio*"
+            android:layout_marginTop="@dimen/ten"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginEnd="@dimen/ten"
+            android:hint="@string/price"
             android:inputType="numberDecimal"
             app:hintTextColor="@color/purple_hand"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -142,12 +142,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiCategory"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="Categoría*"
+            android:layout_marginTop="@dimen/ten"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginEnd="@dimen/ten"
+            android:hint="@string/category"
             app:hintTextColor="@color/purple_hand"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/purple_hand"
@@ -167,9 +167,9 @@
             android:id="@+id/btnUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subir producto"
+            android:text="@string/upload_prod"
             android:backgroundTint="@color/purple_hand"
-            android:layout_margin="20dp"
+            android:layout_margin="@dimen/twenty"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tiCategory"
@@ -177,8 +177,8 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/ivSuccess"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="@dimen/two_hundred"
+            android:layout_height="@dimen/two_hundred"
             app:srcCompat="@raw/success"
             app:lottie_loop="false"
             app:layout_constraintStart_toStartOf="parent"

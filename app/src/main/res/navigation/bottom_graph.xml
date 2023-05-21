@@ -52,6 +52,15 @@
         <action
             android:id="@+id/action_productFragment_to_messagesFragment"
             app:destination="@id/messagesFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_vendoFragment"
+            app:destination="@id/vendoFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_comproFragment"
+            app:destination="@id/comproFragment" />
+        <action
+            android:id="@+id/action_productFragment_to_favsFragment"
+            app:destination="@id/favsFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatsFragment"

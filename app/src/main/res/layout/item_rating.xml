@@ -2,9 +2,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardElevation="5dp"
-    app:cardCornerRadius="8dp"
-    android:layout_margin="5dp">
+    app:cardElevation="@dimen/five"
+    app:cardCornerRadius="@dimen/eight"
+    android:layout_margin="@dimen/five">
 
     <LinearLayout
         android:id="@+id/llRating"
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/ten"
             android:progressDrawable="@drawable/custom_ratingbar_selector"
             android:numStars="5"
             android:stepSize="1"
@@ -27,18 +27,16 @@
             android:id="@+id/tvComment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Todo bien"
-            android:textSize="14sp" />
+            android:layout_margin="@dimen/ten"
+            android:textSize="@dimen/t_fourteen" />
 
         <TextView
             android:id="@+id/tvFrom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_margin="10dp"
-            android:textStyle="bold"
-            android:text="Usuario" />
+            android:layout_margin="@dimen/ten"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

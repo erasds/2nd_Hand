@@ -12,12 +12,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.esardo.a2ndhand.model.Picture
 import com.esardo.a2ndhand.model.Product
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
-import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +40,7 @@ class ProductViewModel: ViewModel() {
         return productLiveData
     }
 
+    //Función para insertar un nuevo producto
     fun insertProduct(
         name: String,
         description: String,
@@ -61,7 +62,7 @@ class ProductViewModel: ViewModel() {
         var pic4 = ""
         var pic5 = ""
 
-        //Get CategoryId
+        //Obtener el CategoryId
         val categoryCol = db.collection("Category")
         val query = categoryCol.whereEqualTo("Name", category)
         viewModelScope.launch {
@@ -69,14 +70,14 @@ class ProductViewModel: ViewModel() {
             val docSnapshot = querySnapshot.documents[0]
             val categoryId = docSnapshot.id
 
-            //Get TownId
+            //Obtener el TownId
             val userDoc = db.collection("User").document(userId)
             userDoc.get().addOnSuccessListener { user ->
                 if (user != null) {
                     val townId = user.getString("TownId")
                     if (townId != null) {
 
-                        //Create new Product with the data obtained
+                        //Crea un nuevo producto con los datos obtenidos
                         val product = hashMapOf(
                             "Name" to name,
                             "Description" to description,
@@ -88,6 +89,7 @@ class ProductViewModel: ViewModel() {
                             "PublishDate" to publishDate
                         )
 
+                        //Si hay imágenes hay que subirlas a Cloud Storage y obtener la url
                         if(imageUris.isNotEmpty()) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 val permission = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -98,16 +100,13 @@ class ProductViewModel: ViewModel() {
                                 val deferredList = imageUris.map { image ->
                                     val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
                                     val uploadTask = storageRef.putFile(image)
-                                    uploadTask.await() // esperar a que la subida del archivo termine
-                                    storageRef.downloadUrl.await() // esperar a que se genere la URL de descarga
+                                    uploadTask.await() //esperar a que la subida del archivo termine
+                                    storageRef.downloadUrl.await() //esperar a que se genere la URL de descarga
                                 }
                                 picturesList.clear()
                                 picturesList.addAll(deferredList.map { it.toString() })
 
                                 when(picturesList.size) {
-                                    0 -> {
-                                        println("No hacemos nada")
-                                    }
                                     1 -> {
                                         pic1 = picturesList[0]
                                     }
@@ -135,7 +134,7 @@ class ProductViewModel: ViewModel() {
                                     }
                                 }
 
-                                //Create new Picture with the data obtained
+                                //Crea un nuevo objeto Picture con los datos obtenidos
                                 val pictures = hashMapOf(
                                     "Pic1" to pic1,
                                     "Pic2" to pic2,
@@ -150,7 +149,7 @@ class ProductViewModel: ViewModel() {
                                         .addOnSuccessListener {
                                             //Product upload completed
                                             isProductUploadedSuccessfully.postValue(true)
-                                            Log.d(TAG, "Producto y fotos insertadas con éxtio")
+                                            Log.d(TAG, "Producto y fotos insertadas con éxito")
 
                                         }
                                         .addOnFailureListener { e ->
@@ -164,15 +163,13 @@ class ProductViewModel: ViewModel() {
                                 .addOnSuccessListener {
                                     //Product upload completed
                                     isProductUploadedSuccessfully.postValue(true)
-                                    Log.d(TAG, "Producto insertado con éxtio")
+                                    Log.d(TAG, "Producto insertado con éxito")
                                 }
                                 .addOnFailureListener { e ->
                                     isProductUploadedSuccessfully.postValue(false)
                                     Log.d(TAG, "Se ha producido un error al intentar insertar el producto",e)
                                 }
-
                         }
-
                     }
                 }
             }
@@ -180,6 +177,7 @@ class ProductViewModel: ViewModel() {
         return isProductUploadedSuccessfully
     }
 
+    //Función para actualizar un producto
     fun updateProduct(
         productId: String?,
         name: String,
@@ -193,7 +191,6 @@ class ProductViewModel: ViewModel() {
     {
         val isProductUploadedSuccessfully = MutableLiveData<Boolean>()
         val priceD = price.toDouble()
-        // Crea un nuevo documento para el producto en Firestore
         val publishDate = Timestamp(Date())
         var pic1 = ""
         var pic2 = ""
@@ -204,7 +201,7 @@ class ProductViewModel: ViewModel() {
         var userId: String? = ""
         var townId: String? = ""
 
-        //Get CategoryId
+        //Obtener CategoryId
         val categoryCol = db.collection("Category")
         val query = categoryCol.whereEqualTo("Name", category)
         viewModelScope.launch {
@@ -212,7 +209,7 @@ class ProductViewModel: ViewModel() {
             val docSnapshot = querySnapshot.documents[0]
             val categoryId = docSnapshot.id
 
-            //Get isSell, userId and TownId
+            //Obtener isSell, userId y TownId
             val prodCol = db.collection("Product").document(productId!!)
             prodCol.get().addOnSuccessListener { prod ->
                 if(prod != null) {
@@ -221,7 +218,7 @@ class ProductViewModel: ViewModel() {
                     townId = prod.getString("TownId")
                 }
 
-                //Create new Product with the data obtained
+                //Crea un nuevo producto con los datos obtenidos
                 val productUpdated = hashMapOf(
                     "Name" to name,
                     "Description" to description,
@@ -233,6 +230,7 @@ class ProductViewModel: ViewModel() {
                     "PublishDate" to publishDate
                 )
 
+                //Si hay imágenes las sube a Cloud Storage y obtiene su url
                 if(imageUris.isNotEmpty()) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val permission = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -243,8 +241,8 @@ class ProductViewModel: ViewModel() {
                         val deferredList = imageUris.map { image ->
                             val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
                             val uploadTask = storageRef.putFile(image)
-                            uploadTask.await() // esperar a que la subida del archivo termine
-                            storageRef.downloadUrl.await() // esperar a que se genere la URL de descarga
+                            uploadTask.await() //esperar a que la subida del archivo termine
+                            storageRef.downloadUrl.await() //esperar a que se genere la URL de descarga
                         }
                         picturesList.clear()
                         picturesList.addAll(deferredList.map { it.toString() })
@@ -277,7 +275,7 @@ class ProductViewModel: ViewModel() {
                             }
                         }
 
-                        //Create new Picture with the data obtained
+                        //Crea un nuevo objeto Picture con los datos obtenidos
                         val pictures = hashMapOf(
                             "Pic1" to pic1,
                             "Pic2" to pic2,
@@ -301,7 +299,6 @@ class ProductViewModel: ViewModel() {
                                                 )
                                             }
                                     }
-
                                 }
                                 .addOnFailureListener { e ->
                                     isProductUploadedSuccessfully.postValue(false)
@@ -328,7 +325,59 @@ class ProductViewModel: ViewModel() {
         return isProductUploadedSuccessfully
     }
 
-    //Función que obtiene todos los productos filtrados por si son en venta o en demanda
+    //Función para eliminar un producto
+    fun deleteProduct(productId: String): LiveData<Boolean> {
+        val isProductDeletedSuccessfully = MutableLiveData<Boolean>()
+        val productRef = db.collection("Product").document(productId)
+
+        //Se eliminan primero los documentos de la subcolección Picture
+        productRef.collection("Picture")
+            .get()
+            .addOnCompleteListener { task: Task<QuerySnapshot> ->
+                if (task.isSuccessful) {
+                    //Obtiene todos los documentos de la subcolección "Picture"
+                    val pictureDocuments = task.result?.documents ?: emptyList()
+                    //Si hay documentos los elimina
+                    if (pictureDocuments.isNotEmpty()) {
+                        val deletePictureTasks = pictureDocuments.map { pictureDoc ->
+                            pictureDoc.reference.delete()
+                        }
+
+                        //Espera a que se completen todas las tareas de eliminación de Picture
+                        Tasks.whenAllComplete(deletePictureTasks)
+                            .addOnCompleteListener {
+                                //Procede a eliminar el producto
+                                deleteProductDocument(productRef, isProductDeletedSuccessfully)
+                            }
+                    } else {
+                        //Si no hay imágenes elimina directamente el producto
+                        deleteProductDocument(productRef, isProductDeletedSuccessfully)
+                    }
+                } else {
+                    isProductDeletedSuccessfully.postValue(false)
+                    Log.d(TAG, "Se ha producido un error al intentar obtener los documentos de la subcolección 'Picture'")
+                }
+            }
+        return isProductDeletedSuccessfully
+    }
+
+    private fun deleteProductDocument(
+        productRef: DocumentReference,
+        isProductDeletedSuccessfully: MutableLiveData<Boolean>
+    ) {
+        productRef.delete()
+            .addOnCompleteListener { deleteProductTask: Task<Void> ->
+                if (deleteProductTask.isSuccessful) {
+                    isProductDeletedSuccessfully.postValue(true)
+                    Log.d(TAG, "Producto eliminado con éxito")
+                } else {
+                    isProductDeletedSuccessfully.postValue(false)
+                    Log.d(TAG, "Se ha producido un error al intentar eliminar el producto")
+                }
+            }
+    }
+
+    //Función que obtiene todos los productos filtrados dependiendo de si son en venta o en demanda
     fun getAllProducts(isSell: Boolean, userId: String) {
         val favCol = db.collection("User")
             .document(userId)
@@ -354,7 +403,7 @@ class ProductViewModel: ViewModel() {
                         for (document in documents) {
                             val id = document.id
                             val data = document.toObject<Product>()
-                            // Asignar el productId al objeto Product
+                            //Asigna el productId al objeto Product
                             data.id = id
 
                             if (favoriteList.contains(id)) data.isChecked = true
@@ -375,13 +424,13 @@ class ProductViewModel: ViewModel() {
                                     image = Picture(picId, pic1, pic2, pic3, pic4, pic5)
                                 }
 
-                                // Si hay alguna imagen la asignamos al objeto Product
+                                //Si hay alguna imagen la asignamos al objeto Product
                                 if (image != null) {
                                     data.Picture = image
                                 }
-                                // Agregamos el objeto Product a la lista
+                                //Agregamos el objeto Product a la lista
                                 productList.add(data)
-                                // Actualizamos la lista y publicamos los cambios
+                                //Actualizamos la lista y publicamos los cambios
                                 productLiveData.postValue(productList)
                             }
                         }
@@ -436,11 +485,11 @@ class ProductViewModel: ViewModel() {
 
             val productCol = db.collection("Product")
             var query: Query? = null
-            //Si contiene Todos tiene que cargar todos los productos
+            //Si contiene 'Todos' tiene que cargar todos los productos
             if(category.contains("Todos")) {
                 //Llamamos a la función que carga todos los productos
                 getAllProducts(isSell, userId)
-            //Si contiene Cerca hay que sacar los de la ciudad del usuario que ha iniciado sesión
+            //Si contiene 'Cerca' hay que sacar los de la ciudad del usuario que ha iniciado sesión
             } else if(category.contains("Cerca")) {
                 //Primero obtenemos el TownId del usuario
                 var townId = ""
@@ -460,7 +509,7 @@ class ProductViewModel: ViewModel() {
                                 for (document in documents) {
                                     val id = document.id
                                     val data = document.toObject<Product>()
-                                    // Asignar el productId al objeto Product
+                                    //Asigna el productId al objeto Product
                                     data.id = id
 
                                     if (favoriteList.contains(id)) data.isChecked = true
@@ -496,7 +545,7 @@ class ProductViewModel: ViewModel() {
 
                     }
                 }
-            //Si contiene Novedades hay que ordenarlos por los más recientes
+            //Si contiene 'Novedades' hay que ordenarlos por los más recientes
             } else if(category.contains("Novedades")) {
                 //Ordenamos por la fecha de publicación más reciente
                 query = productCol.whereEqualTo("IsSell", isSell).orderBy("PublishDate", Query.Direction.DESCENDING)
@@ -510,7 +559,7 @@ class ProductViewModel: ViewModel() {
                             for (document in documents) {
                                 val id = document.id
                                 val data = document.toObject<Product>()
-                                // Asignar el productId al objeto Product
+                                //Asigna el productId al objeto Product
                                 data.id = id
 
                                 if (favoriteList.contains(id)) data.isChecked = true
@@ -566,7 +615,7 @@ class ProductViewModel: ViewModel() {
                                     for (document in documents) {
                                         val id = document.id
                                         val data = document.toObject<Product>()
-                                        // Asignar el productId al objeto Product
+                                        //Asigna el productId al objeto Product
                                         data.id = id
 
                                         if (favoriteList.contains(id)) data.isChecked = true
@@ -619,7 +668,7 @@ class ProductViewModel: ViewModel() {
                 val docSnapshot = querySnapshot.documents[0]
                 val favRef = docSnapshot.reference
                 favRef.delete().addOnSuccessListener {
-                    Log.d(TAG, "Documento eliminado exitosamente!")
+                    Log.d(TAG, "Documento eliminado con éxito")
                 }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error al eliminar el documento", e)
@@ -660,7 +709,7 @@ class ProductViewModel: ViewModel() {
             }
 
             if(productIdList.isNotEmpty()) {
-                // Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección Product
+                //Ahora que tenemos los IDs de los productos, realizamos una segunda consulta a la colección Product
                 val productCol = db.collection("Product")
                 val query = productCol.whereIn(FieldPath.documentId(), productIdList)
                 query.addSnapshotListener { documents, exception ->
@@ -673,7 +722,7 @@ class ProductViewModel: ViewModel() {
                             for (document in documents) {
                                 val id = document.id
                                 val data = document.toObject<Product>()
-                                // Asignar el productId al objeto Product
+                                //Asigna el productId al objeto Product
                                 data.id = id
 
                                 data.isChecked = true
@@ -709,8 +758,8 @@ class ProductViewModel: ViewModel() {
                 }
             }
         }.addOnFailureListener { exception ->
-            Log.d(TAG, "Error getting product IDs: ", exception)
-            // Si ocurre un error, se devuelve una lista vacía
+            Log.d(TAG, "Error obteniendo los Ids de los productos: ", exception)
+            //Si ocurre un error, se devuelve una lista vacía
             productLiveData.postValue(emptyList())
         }
     }
@@ -741,7 +790,7 @@ class ProductViewModel: ViewModel() {
                         for (document in documents) {
                             val id = document.id
                             val data = document.toObject<Product>()
-                            // Asignar el productId al objeto Product
+                            //Asigna el productId al objeto Product
                             data.id = id
 
                             if (favoriteList.contains(id)) data.isChecked = true

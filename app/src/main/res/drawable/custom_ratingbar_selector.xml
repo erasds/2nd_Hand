@@ -5,5 +5,4 @@
 
     <item android:id="@android:id/progress"
         android:drawable="@drawable/icon_filled_rt" />
-
 </layer-list>

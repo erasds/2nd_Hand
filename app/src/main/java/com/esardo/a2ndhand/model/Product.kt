@@ -19,7 +19,7 @@ data class Product(
     var isChecked: Boolean
 ) : Serializable
 {
-    // Constructor without arguments
+    //Constructor sin argumentos
     constructor() : this("", "","",0.0, Picture("", "", "", "", "", ""), "",false,"","",Date(), false)
 }
 
@@ -33,7 +33,7 @@ data class Picture(
     var Pic5 : String
 ) : Serializable
 {
-    // Constructor without arguments
+    //Constructor sin argumentos
     constructor() : this("", "", "","","","")
 }
 

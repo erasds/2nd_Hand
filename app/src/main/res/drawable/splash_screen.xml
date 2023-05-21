@@ -3,8 +3,8 @@
     android:opacity="opaque">
     <item android:drawable="@color/purple_hand"/>
     <item
-        android:width="300dp"
-        android:height="200dp"
+        android:width="@dimen/two_hundred"
+        android:height="@dimen/two_hundred"
         android:drawable="@drawable/logo_splash"
         android:gravity="center" />
 </layer-list>

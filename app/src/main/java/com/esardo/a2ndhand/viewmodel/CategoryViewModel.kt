@@ -7,6 +7,7 @@ import kotlinx.coroutines.tasks.await
 class CategoryViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
 
+    //Función que obtiene los nombres de las categorías
     suspend fun getCategories(): List<String> {
         val categoryCol = db.collection("Category").orderBy("Name").get().await()
         val categories = mutableListOf<String>()

@@ -65,7 +65,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         //Llamamos a la función getAllProducts para que se llene la lista de productos
         viewModel.getAllProducts(isSell, userId)
 
-        //Este método coge el texto del searchView y lo envía en la variable query
+        //Coge el texto del searchView y lo envía en la variable query
         binding.svProduct.setOnQueryTextListener(this)
         //Cuando se limpia el SearchView se vuelven a cargar todos los productos
         binding.svProduct.setOnCloseListener {
@@ -80,7 +80,6 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
 
         //Inicia la actividad UploadProduct y le pasa el userId y la variable isSell
         binding.btnNewProduct.setOnClickListener {
-            //Start UploadProduct, send userId and set isSell as true
             val intent = Intent(activity, UploadProduct::class.java)
             intent.putExtra("compro_fragment", userRef)
             startActivity(intent)
@@ -89,6 +88,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         return binding.root
     }
 
+    //Muestra el diálogo
     private fun showDialog() {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_selection)
@@ -146,7 +146,9 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
     //Carga el detalle del producto cuando se pulsa en una de las tarjetas
     private fun loadProduct(product: Product) {
         val bundle = Bundle()
+        val emisor = "compro"
         bundle.putSerializable("objeto", product)
+        bundle.putString("emisor", emisor)
         //Navega al ProductFragment y le pasa el bundle como argumento
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_comproFragment_to_productFragment, bundle)
@@ -156,6 +158,7 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(newText:String?):Boolean {
         return true
     }
+
     //Envía el texto del SearchView a la función que filtra por dicho texto
     override fun onQueryTextSubmit(query: String?): Boolean {
         if(!query.isNullOrEmpty()){

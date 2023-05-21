@@ -1,16 +1,12 @@
 package com.esardo.a2ndhand.viewmodel
 
 import android.content.ContentValues
-import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.navigation.Navigation
-import com.esardo.a2ndhand.R
 import com.esardo.a2ndhand.model.Chat
 import com.esardo.a2ndhand.model.Message
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
@@ -27,11 +23,12 @@ class ChatViewModel: ViewModel() {
         return chatLiveData
     }
 
+    //Función para obtener todos los chats
     fun getAllChats(userId: String) {
         val chatCol = db.collection("User").document(userId).collection("Chat")
         chatCol.addSnapshotListener { documents, exception ->
             if (exception != null) {
-                Log.w("TAG", "Listen failed.", exception)
+                Log.w("TAG", "Error leyendo los documentos", exception)
                 return@addSnapshotListener
             } else {
                 if(documents != null) {
@@ -50,7 +47,7 @@ class ChatViewModel: ViewModel() {
                         val query = messageCol.orderBy("Date", Query.Direction.DESCENDING).limit(1)
                         query.addSnapshotListener { documents, exception ->
                             if (exception != null) {
-                                Log.w("TAG", "Listen failed.", exception)
+                                Log.w("TAG", "Error leyendo los documentos", exception)
                                 return@addSnapshotListener
                             } else {
                                 if (documents != null) {
@@ -67,7 +64,6 @@ class ChatViewModel: ViewModel() {
                                         chat.Message.ToUser = toUser
                                         chat.Message.Date = date
                                     }
-
                                     chatLiveData.postValue(chatList)
                                 }
                             }
@@ -79,6 +75,7 @@ class ChatViewModel: ViewModel() {
         }
     }
 
+    //Función para insertar un nuevo chat
     fun createNewChat(userId: String, productUserId: String): LiveData<Chat?> {
         val chatLiveData = MutableLiveData<Chat?>()
         var chat: Chat? = null
@@ -103,13 +100,12 @@ class ChatViewModel: ViewModel() {
                     db.collection("User").document(userId)
                         .collection("Chat").add(chat1)
                         .addOnSuccessListener { documentReference ->
-                            //Now I can obtain it's data
+                            //Ahora podemos obtener sus datos
                             val documentId = documentReference.id
                             chatCol.document(documentId).get()
                                 .addOnSuccessListener { documentSnapshot ->
                                     chat = Chat(documentId, productUserId, Message("", "", "", "", Date()))
 
-                                    //Chat creation completed
                                     Log.d(ContentValues.TAG, "Chat creado para el usuario logeado")
 
                                     //Lo creamos también para el otro usuario
@@ -119,7 +115,6 @@ class ChatViewModel: ViewModel() {
                                     db.collection("User").document(productUserId)
                                         .collection("Chat").add(chat2)
                                         .addOnSuccessListener {
-                                            //Chat creation completed
                                             Log.d(ContentValues.TAG, "Chat creado para el otro usuario")
 
                                             //Después devolvemos el chat de nuestro usuario
@@ -128,7 +123,6 @@ class ChatViewModel: ViewModel() {
                                 }
                         }
                         .addOnFailureListener { exception ->
-                            //Error
                             Log.w(ContentValues.TAG, "Error al intentar crear un chat: ", exception)
                         }
                 }

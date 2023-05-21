@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/t_twenty"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_marginEnd="@dimen/twenty"
+        android:layout_marginTop="@dimen/fourty"
+        android:layout_marginStart="@dimen/twenty"
+        android:layout_marginBottom="@dimen/twenty"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="@dimen/zero"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/five"
+            android:layout_marginStart="@dimen/thirty"
+            android:layout_marginEnd="@dimen/ten"
+            android:layout_marginBottom="@dimen/twenty"
+            android:layout_gravity="center"
+            android:text="@string/confirm"
+            android:backgroundTint="@color/purple_hand"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="@dimen/zero"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/five"
+            android:layout_marginStart="@dimen/ten"
+            android:layout_marginEnd="@dimen/thirty"
+            android:layout_marginBottom="@dimen/twenty"
+            android:layout_gravity="center"
+            android:text="@string/cancel"
+            android:backgroundTint="@color/purple_hand"/>
+    </LinearLayout>
+</LinearLayout>

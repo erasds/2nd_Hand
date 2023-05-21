@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Elements -->
+    <dimen name="zero">0dp</dimen>
+    <dimen name="two">2dp</dimen>
+    <dimen name="four">4dp</dimen>
+    <dimen name="five">5dp</dimen>
+    <dimen name="eight">8dp</dimen>
+    <dimen name="ten">10dp</dimen>
+    <dimen name="fifteen">15dp</dimen>
+    <dimen name="sixteen">16dp</dimen>
+    <dimen name="twenty">20dp</dimen>
+    <dimen name="twenty_four">24dp</dimen>
+    <dimen name="twenty_five">25dp</dimen>
+    <dimen name="thirty">30dp</dimen>
+    <dimen name="fourty">40dp</dimen>
+    <dimen name="fifty">50dp</dimen>
+    <dimen name="fifty_five">55dp</dimen>
+    <dimen name="fifty_six">56dp</dimen>
+    <dimen name="ninety">90dp</dimen>
+    <dimen name="one_hundred">100dp</dimen>
+    <dimen name="one_twenty">120dp</dimen>
+    <dimen name="two_hundred">200dp</dimen>
+    <dimen name="three_hundred">300dp</dimen>
+    <dimen name="three_fifty">350dp</dimen>
+
+    <!-- Text -->
+    <dimen name="t_eight">8sp</dimen>
+    <dimen name="t_nine">9sp</dimen>
+    <dimen name="t_ten">10sp</dimen>
+    <dimen name="t_fourteen">14sp</dimen>
+    <dimen name="t_sixteen">16sp</dimen>
+    <dimen name="t_eighteen">18sp</dimen>
+    <dimen name="t_twenty">20sp</dimen>
+</resources>

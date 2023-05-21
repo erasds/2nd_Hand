@@ -1,5 +1,33 @@
 <resources>
-    <string name="app_name">2nd Hand</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">2ND HAND</string>
+    <string name="vf">Vendo</string>
+    <string name="cf">Compro</string>
+    <string name="ff">Favoritos</string>
+    <string name="mf">Mensajes</string>
+    <string name="pf">Perfil</string>
+    <string name="user">Usuario*</string>
+    <string name="password">Contraseña*</string>
+    <string name="name">Nombre</string>
+    <string name="surname">Apellidos</string>
+    <string name="email">Correo electrónico*</string>
+    <string name="phone">Teléfono</string>
+    <string name="town">Ciudad*</string>
+    <string name="sign_in">Registrarse</string>
+    <string name="mail">Email</string>
+    <string name="pass">Contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="register_here">Regístrate aquí</string>
+    <string name="see_votes">[ Ver valoraciones ]</string>
+    <string name="vote_user">Valorar usuario</string>
+    <string name="msg">Mensaje</string>
+    <string name="send_msg">Enviar mensaje</string>
+    <string name="prod_name">Nombre Producto*</string>
+    <string name="description">Descripción</string>
+    <string name="price">Precio*</string>
+    <string name="category">Categoría*</string>
+    <string name="upload_prod">Subir producto</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="add_comment">Añade un comentario</string>
+    <string name="send_vote">Enviar valoración</string>
 </resources>

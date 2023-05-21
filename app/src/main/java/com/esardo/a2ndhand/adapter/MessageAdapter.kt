@@ -18,6 +18,7 @@ class MessageAdapter(
     private val messageList: List<Message>
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    //Asigna una vista distinta dependiendo de si es un mensaje enviado o recibido
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(viewType == 1) {
             val layoutInflater = LayoutInflater.from(parent.context)
@@ -28,6 +29,7 @@ class MessageAdapter(
         }
     }
 
+    //Para saber si el mensaje es enviado o recibido
     override fun getItemViewType(position: Int): Int {
         val currentMessage = messageList[position]
         return if(userId == currentMessage.FromUser) {
@@ -52,11 +54,12 @@ class MessageAdapter(
 
     }
 
+    //ViewHolder para los mensajes enviados
     inner class SentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding = ItemMessageSendedBinding.bind(view)
         fun bind (message: Message, userId: String) {
             if (message.FromUser == userId) {
-                // Formatea la fecha como un String legible
+                //Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
                 val dateString = dateFormat.format(message.Date)
@@ -66,11 +69,12 @@ class MessageAdapter(
         }
     }
 
+    //ViewHolder para los mensajes recibidos
     inner class ReceivedViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding = ItemMessageReceivedBinding.bind(view)
         fun bind (message: Message, userId: String) {
             if (message.FromUser != userId) {
-                // Formatea la fecha como un String legible
+                //Formatea la fecha como un String legible
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
                 dateFormat.timeZone = TimeZone.getTimeZone("GMT+2")
                 val dateString = dateFormat.format(message.Date)

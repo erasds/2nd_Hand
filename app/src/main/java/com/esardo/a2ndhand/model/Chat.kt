@@ -9,7 +9,7 @@ data class Chat(
     val Message: Message
 ) : Serializable
 {
-    // Constructor without arguments
+    //Constructor sin argumentos
     constructor() : this("", "", Message("", "", "", "", Date()))
 }
 data class Message(
@@ -20,6 +20,6 @@ data class Message(
     var Date: Date //Fecha del mensaje
 ) : Serializable
 {
-    // Constructor without arguments
+    //Constructor sin argumentos
     constructor() : this("", "", "", "", Date())
 }

@@ -1,6 +1,8 @@
 package com.esardo.a2ndhand
 
+import android.animation.Animator
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.airbnb.lottie.LottieAnimationView
 import com.esardo.a2ndhand.adapter.RatingAdapter
 import com.esardo.a2ndhand.databinding.FragmentProductBinding
 import com.esardo.a2ndhand.model.Product
@@ -45,6 +49,7 @@ class ProductFragment : Fragment() {
     private val images =  mutableListOf<String>()
     private val ratingList = mutableListOf<Rating>()
 
+    private var emisor: String? = ""
     private lateinit var productRef : Product
     private lateinit var userId: String
     private lateinit var viewPager2: ViewPager2
@@ -66,6 +71,8 @@ class ProductFragment : Fragment() {
         val userRef = activity?.intent?.getSerializableExtra("object") as? User
         //Recibimos el objeto Product de los argumentos
         productRef = requireArguments().getSerializable("objeto") as Product
+        //Recibimos el string emisor para saber desde donde se ha iniciado el fragmento
+        emisor = requireArguments().getString("emisor")
 
         viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
@@ -89,7 +96,6 @@ class ProductFragment : Fragment() {
         //Para mostrar las imágenes
         viewPager2 = binding.viewPager2
         tabLayout = binding.tabLayout
-
         val picture = productRef.Picture
         images.clear()
         if (picture != null) {
@@ -101,7 +107,6 @@ class ProductFragment : Fragment() {
         }
         //Configura el ViewPager2 para mostrar las imágenes
         viewPager2.adapter = ProductImageAdapter(images)
-
         //Vinculamos el tabLayout para que salgan posiciones y podamos indicar que se puede deslizar
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             //Establece el texto del tab como el número de posición (empezando por 1)
@@ -225,6 +230,38 @@ class ProductFragment : Fragment() {
             startActivityForResult(intent, UPDATE_PRODUCT_REQUEST_CODE)
         }
 
+        //Al pulsar el icono de eliminar producto
+        binding.btnDeleteProduct.setOnClickListener {
+            //Primero se abre un diálogo para que el usuario confirme la acción
+            val builder = AlertDialog.Builder(requireContext())
+            val view = layoutInflater.inflate(R.layout.dialog_confirm, null)
+
+            builder.setView(view)
+
+            val dialog = builder.create()
+
+            dialog.show()
+
+            val btnConfirm = view.findViewById<Button>(R.id.btnConfirm)
+            val btnCancel = view.findViewById<Button>(R.id.btnCancel)
+
+            btnConfirm.setOnClickListener {
+                val productId = productRef.id
+                productViewModel.deleteProduct(productId)
+                    .observe(viewLifecycleOwner) { isDeleted ->
+                        if (isDeleted) {
+                            dialog.cancel()
+                            showAnimation(binding.ivAnimation, R.raw.success)
+                        }
+                    }
+            }
+
+            //Se cierra el diálogo
+            btnCancel.setOnClickListener {
+                dialog.cancel()
+            }
+        }
+
         //Al pulsar en Enviar mensaje se llama a la función que crea un nuevo chat en la base de datos
         binding.btnSendMessage.setOnClickListener {
             viewModel.createNewChat(userId, productUserId).observe(viewLifecycleOwner) { chat ->
@@ -245,7 +282,6 @@ class ProductFragment : Fragment() {
         if (requestCode == UPDATE_PRODUCT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val updatedProduct = data.getSerializableExtra("updatedProduct") as? Product
             if (updatedProduct != null) {
-                //productRef = updatedProduct
                 updateProductData(updatedProduct)
             }
         }
@@ -288,7 +324,49 @@ class ProductFragment : Fragment() {
         }
     }
 
-    // Clase interna para el adaptador del ViewPager2
+    //Lanza la animación y viaja al fragmento correspondiente
+    private fun showAnimation(
+        imageView: LottieAnimationView,
+        animation: Int,
+    ) {
+        imageView.visibility = View.VISIBLE
+        imageView.setAnimation(animation)
+        imageView.playAnimation()
+        imageView.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                imageView.visibility = GONE
+                when(emisor) {
+                    "vendo" ->
+                        //Navega al VendoFragment
+                        view?.let { Navigation.findNavController(it) }
+                            ?.navigate(R.id.action_productFragment_to_vendoFragment)
+                    "compro" ->
+                        //Navega al ComproFragment
+                        view?.let { Navigation.findNavController(it) }
+                            ?.navigate(R.id.action_productFragment_to_comproFragment)
+                    "favs" ->
+                        //Navega al FavsFragment
+                        view?.let { Navigation.findNavController(it) }
+                            ?.navigate(R.id.action_productFragment_to_favsFragment)
+                    "profile" ->
+                        //Navega al ProfileFragment
+                        view?.let { Navigation.findNavController(it) }
+                            ?.navigate(R.id.action_productFragment_to_profileFragment)
+                }
+            }
+            override fun onAnimationCancel(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+        })
+    }
+
+    //Clase interna para el adaptador del ViewPager2
     private inner class ProductImageAdapter(val imageUrls: List<String>) : RecyclerView.Adapter<ProductImageAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -302,7 +380,7 @@ class ProductFragment : Fragment() {
                 .load(imageUrl)
                 .placeholder(R.drawable.logo)
                 .error(R.drawable.logo)
-                .into(holder.imageView) // Utiliza Picasso para cargar la imagen en el ImageView
+                .into(holder.imageView)
         }
 
         override fun getItemCount() = imageUrls.size

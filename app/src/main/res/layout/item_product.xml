@@ -2,22 +2,22 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardElevation="5dp"
+    app:cardElevation="@dimen/five"
     android:layout_width="wrap_content"
-    android:layout_margin="4dp"
-    app:cardCornerRadius="8dp"
+    android:layout_margin="@dimen/four"
+    app:cardCornerRadius="@dimen/eight"
     app:cardUseCompatPadding="true"
     android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="@dimen/sixteen">
 
         <ImageView
             android:id="@+id/ivImage"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="@dimen/one_hundred"
             android:src="@drawable/logo"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"/>
@@ -26,11 +26,10 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/t_twenty"
             android:textStyle="bold"
-            android:text="Product"
             android:layout_below="@+id/ivImage"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="@dimen/eight" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,16 +40,15 @@
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/zero"
                 android:layout_height="wrap_content"
-                android:text="150 €"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp" />
+                android:textSize="@dimen/t_fourteen"
+                android:layout_marginTop="@dimen/four" />
 
             <CheckBox
                 android:id="@+id/chxFav"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/twenty_four"
+                android:layout_height="@dimen/twenty_four"
                 android:button="@drawable/custom_checkbox_selector" />
 
         </LinearLayout>

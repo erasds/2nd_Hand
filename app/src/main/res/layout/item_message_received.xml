@@ -9,28 +9,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/msg_received_background"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginStart="@dimen/five"
+        android:layout_marginTop="@dimen/five">
 
         <TextView
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="15dp"
-            android:textSize="10sp"
-            android:text="Date" />
+            android:paddingStart="@dimen/fifteen"
+            android:paddingTop="@dimen/ten"
+            android:paddingEnd="@dimen/fifteen"
+            android:textSize="@dimen/t_ten" />
 
         <TextView
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="300dp"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:paddingBottom="10dp"
-            android:text="Message content"
+            android:maxWidth="@dimen/three_hundred"
+            android:paddingStart="@dimen/fifteen"
+            android:paddingEnd="@dimen/fifteen"
+            android:paddingBottom="@dimen/ten"
             android:layout_below="@+id/tvDate"/>
 
     </RelativeLayout>

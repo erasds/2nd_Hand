@@ -2,26 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/vendoFragment"
-        android:icon="@drawable/icon_sell"
-        android:title="Vendo" />
+        android:icon="@drawable/icon_buy"
+        android:title="@string/vf" />
 
     <item
         android:id="@+id/comproFragment"
-        android:icon="@drawable/icon_buy"
-        android:title="Compro" />
+        android:icon="@drawable/icon_sell"
+        android:title="@string/cf" />
 
     <item
         android:id="@+id/favsFragment"
         android:icon="@drawable/icon_favorite"
-        android:title="Favoritos" />
+        android:title="@string/ff" />
 
     <item
         android:id="@+id/chatsFragment"
         android:icon="@drawable/icon_message"
-        android:title="Mensajes" />
+        android:title="@string/mf" />
 
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/icon_account"
-        android:title="Perfil" />
+        android:title="@string/pf" />
 </menu>

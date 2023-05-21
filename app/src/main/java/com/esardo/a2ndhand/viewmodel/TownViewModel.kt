@@ -7,6 +7,7 @@ import kotlinx.coroutines.tasks.await
 class TownViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
 
+    //Para obtener los nombres de las ciudades
     suspend fun getTowns(): List<String> {
         val townCol = db.collection("Town").orderBy("Name").get().await()
         val towns = mutableListOf<String>()

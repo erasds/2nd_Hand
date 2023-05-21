@@ -12,10 +12,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ActivityHomeBinding.inflate(layoutInflater).also { binding = it }.root)
-
+        //Aquí lo único que hacemos es cargar la navegación
         val navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment?)!!.navController
 
         NavigationUI.setupWithNavController(binding.bottomNavView, navController);
+
     }
 }

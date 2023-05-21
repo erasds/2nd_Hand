@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProductFragment"
-    android:layout_marginBottom="55dp">
+    android:layout_marginBottom="@dimen/fifty_five">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/ivPictures"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="@dimen/three_fifty"
             android:src="@drawable/logo"
             android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
@@ -24,7 +24,7 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager2"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="@dimen/three_fifty"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/tabLayout"/>
@@ -55,12 +55,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginBottom="@dimen/ten"
+                android:layout_marginStart="@dimen/ten"
+                android:layout_marginEnd="@dimen/ten">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
@@ -69,17 +69,15 @@
                         android:id="@+id/tvProdName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Nombre Producto"
-                        android:textSize="20sp"
+                        android:layout_marginTop="@dimen/ten"
+                        android:textSize="@dimen/t_twenty"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvPrice"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="150 €"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/t_eighteen"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -92,20 +90,20 @@
 
                     <ImageButton
                         android:id="@+id/btnEditProduct"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_width="@dimen/thirty"
+                        android:layout_height="@dimen/thirty"
+                        android:layout_marginTop="@dimen/ten"
+                        android:layout_marginEnd="@dimen/ten"
                         android:scaleType="fitCenter"
                         android:background="@color/white"
                         android:src="@drawable/icon_edit_product" />
 
                     <ImageButton
                         android:id="@+id/btnDeleteProduct"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_width="@dimen/thirty"
+                        android:layout_height="@dimen/thirty"
+                        android:layout_marginTop="@dimen/ten"
+                        android:layout_marginEnd="@dimen/ten"
                         android:scaleType="fitCenter"
                         android:background="@color/white"
                         android:src="@drawable/icon_delete_product"/>
@@ -118,37 +116,34 @@
                 android:id="@+id/tvCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Categoría"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"/>
+                android:layout_marginStart="@dimen/ten"
+                android:layout_marginEnd="@dimen/ten"/>
 
             <TextView
                 android:id="@+id/tvPublishDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01/05/2023"
-                android:layout_marginBottom="5dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"/>
+                android:layout_marginBottom="@dimen/five"
+                android:layout_marginStart="@dimen/ten"
+                android:layout_marginEnd="@dimen/ten"/>
 
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Descripción sobre las características del producto"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"/>
+                android:layout_marginStart="@dimen/ten"
+                android:layout_marginEnd="@dimen/ten"/>
 
         </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cvUser"
-            app:cardElevation="5dp"
+            app:cardElevation="@dimen/five"
             android:layout_width="match_parent"
-            app:cardCornerRadius="8dp"
+            app:cardCornerRadius="@dimen/eight"
             app:cardUseCompatPadding="true"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/five"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/llProdData"
@@ -166,8 +161,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ivProfilePicture"
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="@dimen/ninety"
+                    android:layout_height="@dimen/ninety"
                     android:src="@drawable/profile"
                     android:scaleType="centerCrop"/>
 
@@ -175,21 +170,19 @@
                     android:id="@+id/llSellerInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="@dimen/five"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tvUserName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Nombre Usuario"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvUbication"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="Ciudad"/>
+                        android:layout_height="match_parent" />
 
                     <LinearLayout
                         android:id="@+id/llRating"
@@ -200,16 +193,15 @@
                         <TextView
                             android:id="@+id/tvRating"
                             android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:text="1000 puntos de usuario" />
+                            android:layout_width="@dimen/zero"
+                            android:layout_height="match_parent" />
 
                         <TextView
                             android:id="@+id/tvSeeVotes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="10dp"
-                            android:text="[ Ver valoraciones ]" />
+                            android:layout_marginEnd="@dimen/ten"
+                            android:text="@string/see_votes" />
 
                     </LinearLayout>
 
@@ -222,11 +214,23 @@
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enviar mensaje"
+            android:text="@string/send_msg"
             android:backgroundTint="@color/purple_hand"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cvUser"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/ivAnimation"
+            android:layout_width="@dimen/two_hundred"
+            android:layout_height="@dimen/two_hundred"
+            app:srcCompat="@raw/success"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

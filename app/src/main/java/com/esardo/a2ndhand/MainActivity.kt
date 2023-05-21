@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //Para darle formato a los mensajes que se muestran por pantalla
     private fun showMessage(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }

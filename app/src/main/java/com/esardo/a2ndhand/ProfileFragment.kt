@@ -12,7 +12,6 @@ import android.view.View.INVISIBLE
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RatingBar
-import androidx.constraintlayout.widget.ConstraintSet.VISIBLE
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -68,14 +67,14 @@ class ProfileFragment : Fragment() {
 
         //Guardamos el UserId de la referencia,
         //en este caso puede ser del usuario que ha iniciado sesión
-        //o del usuario del perfil que estemos visualizando
+        //o del usuario del perfil que se esté visualizando
         val arguments = arguments
         if(arguments != null){
             //Si es el perfil de otro usuario
             userId = arguments.getString("user") as String
             binding.btnEditProfile.visibility = INVISIBLE
         } else {
-            //Si es nuestro perfil
+            //Si es del usuario logeado
             binding.btnVote.visibility = GONE
             if (userRef != null) {
                 userId = userRef.id
@@ -98,7 +97,7 @@ class ProfileFragment : Fragment() {
                         Picasso.get().load(picture).placeholder(R.drawable.profile).error(R.drawable.profile).into(binding.ivProfilePic)
                     }
 
-                    //Ahora obtenemos el nombre de la ciudad
+                    //Obtenemos el nombre de la ciudad
                     val townId = user.getString("TownId")
                     if (townId != null){
                         val townDoc = FirebaseFirestore.getInstance().collection("Town").document(townId)
@@ -108,16 +107,24 @@ class ProfileFragment : Fragment() {
                                 binding.tvUbication.text = townName
                             }
 
-                            //Ahora cargamos los puntos del usuario
+                            //Cargamos los puntos del usuario
                             val ratingCol = userDoc.collection("Rating")
-                            ratingCol.get().addOnSuccessListener { querySnapshot ->
-                                for(document in querySnapshot.documents) {
-                                    val points = document.getLong("Points")?.toInt() ?: 0
-                                    totalPoints += points
+                            ratingCol.addSnapshotListener { querySnapshot, exception ->
+                                if(exception != null) {
+                                    Log.w("TAG", "Listen failed.", exception)
+                                    return@addSnapshotListener
+                                } else {
+                                    totalPoints = 0
+                                    if (querySnapshot != null) {
+                                        for(document in querySnapshot.documents) {
+                                            val points = document.getLong("Points")?.toInt() ?: 0
+                                            totalPoints += points
+                                        }
+                                    }
+                                    val totalPtsStr = totalPoints.toString()
+                                    binding.tvRating.text = "$totalPtsStr puntos de usuario"
+                                    if(totalPoints == 0) binding.tvSeeVotes.visibility = INVISIBLE
                                 }
-                                val totalPtsStr = totalPoints.toString()
-                                binding.tvRating.text = "$totalPtsStr puntos de usuario"
-                                if(totalPoints == 0) binding.tvSeeVotes.visibility = INVISIBLE
                             }
                         }
                     }
@@ -178,15 +185,15 @@ class ProfileFragment : Fragment() {
 
             //Al enviar la valoración
             btnSendVote.setOnClickListener {
-                //Cojo el valor del rating bar
+                //Cogemos el valor del rating bar
                 val ratingBar = view.findViewById<RatingBar>(R.id.rbHands)
                 val rating = ratingBar.rating.toInt()
 
-                //Cojo el valor del comentario
+                //Cogemos el valor del comentario
                 val etComment = view.findViewById<EditText>(R.id.etComment)
                 val comment = etComment.text.toString()
 
-                //Lo inserto en la base de datos y cierro el diálogo
+                //Lo insertamos en la base de datos y cerramos el diálogo
                 userViewModel.voteUser(userId, rating, comment)
                     .observe(viewLifecycleOwner) { isRated ->
                     if (isRated) {
@@ -195,7 +202,6 @@ class ProfileFragment : Fragment() {
                     }
                 }
             }
-
         }
 
         initRecyclerView()
@@ -213,7 +219,9 @@ class ProfileFragment : Fragment() {
     //Carga el detalle del producto cuando se pulsa en una de las tarjetas
     private fun loadProduct(product: Product) {
         val bundle = Bundle()
+        val emisor = "profile"
         bundle.putSerializable("objeto", product)
+        bundle.putString("emisor", emisor)
         //Navega al ProductFragment y le pasa el bundle como argumento
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_profileFragment_to_productFragment, bundle)
@@ -229,16 +237,16 @@ class ProfileFragment : Fragment() {
         imageView.playAnimation()
         imageView.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
             override fun onAnimationEnd(animation: Animator) {
                 imageView.visibility = GONE
             }
             override fun onAnimationCancel(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
             override fun onAnimationRepeat(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
         })
     }

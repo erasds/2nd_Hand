@@ -170,16 +170,16 @@ class SignInActivity : AppCompatActivity() {
         imageView.playAnimation()
         imageView.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
             override fun onAnimationEnd(animation: Animator) {
                 finish()
             }
             override fun onAnimationCancel(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
             override fun onAnimationRepeat(animation: Animator) {
-                // No se necesita implementación aquí
+                //No se necesita implementación aquí
             }
         })
     }
@@ -282,6 +282,7 @@ class SignInActivity : AppCompatActivity() {
         })
     }
 
+    //Para darle formato a los mensajes que se muestran por pantalla
     private fun showMessage(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }

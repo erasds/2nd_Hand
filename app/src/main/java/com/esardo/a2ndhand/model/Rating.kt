@@ -8,6 +8,6 @@ data class Rating(
     val Observations: String,
     val Points: Int
 ) : Serializable {
-    // Constructor without arguments
+    //Constructor sin argumentos
     constructor() : this("", "", "", 0)
 }

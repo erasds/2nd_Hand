@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ComproFragment"
-    android:layout_marginBottom="55dp">
+    android:layout_marginBottom="@dimen/fifty_five">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,26 +23,26 @@
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/svProduct"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/zero"
                 android:layout_height="wrap_content"
                 app:layout_constraintVertical_bias="0"
                 android:layout_weight="1"/>
 
             <ImageButton
                 android:id="@+id/btnFilter"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/thirty"
+                android:layout_height="@dimen/thirty"
                 android:src="@drawable/icon_filter"
                 android:scaleType="fitCenter"
                 android:background="@color/white"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginTop="@dimen/ten"
+                android:layout_marginEnd="@dimen/twenty"/>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCompro"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/zero"
+            android:layout_height="@dimen/zero"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,8 +57,8 @@
             android:id="@+id/btnNewProduct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="@dimen/sixteen"
+            android:layout_marginBottom="@dimen/sixteen"
             app:backgroundTint="@color/purple_hand"
             app:rippleColor="@color/purple_hand"
             app:tint="@null"

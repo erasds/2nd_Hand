@@ -20,6 +20,7 @@ class MessageViewModel: ViewModel() {
         return messageLiveData
     }
 
+    //Función para obtener todos los mensajes
     fun getAllMessages(userId: String, chatId: String) {
         val chatDoc = db.collection("User").document(userId)
             .collection("Chat").document(chatId)
@@ -27,7 +28,7 @@ class MessageViewModel: ViewModel() {
         val query = messageCol.orderBy("Date", Query.Direction.ASCENDING)
         query.addSnapshotListener { documents, exception ->
             if (exception != null) {
-                Log.w("TAG", "Listen failed.", exception)
+                Log.w("TAG", "Error leyendo los datos", exception)
                 return@addSnapshotListener
             } else {
                 if (documents != null) {
@@ -48,8 +49,9 @@ class MessageViewModel: ViewModel() {
         }
     }
 
+    //Función para enviar (insertar) un mensaje
     fun sendMessage(userId: String, chatId: String, message: Message) {
-        //Create new Message with the data obtained
+        //Crea un nuevo mensaje con los datos obtenidos
         val msg = hashMapOf(
             "Text" to message.Text,
             "FromUser" to message.FromUser,
@@ -63,7 +65,7 @@ class MessageViewModel: ViewModel() {
 
         messageCol.add(msg)
             .addOnSuccessListener {
-                //If the message has been sended, now we have to add it to the otherUser collection too
+                //Si el mensaje se ha enviado, tenemos que añadirlo a la colección del otherUser también
                 val messageCol = db.collection("User").document(message.ToUser)
                     .collection("Chat")
                 messageCol.whereEqualTo("OtherUser", userId).get()
@@ -74,7 +76,6 @@ class MessageViewModel: ViewModel() {
                         }
                         val msgCol = messageCol.document(otherUserChatId).collection("Message")
                         msgCol.add(msg).addOnSuccessListener {
-                            //Message upload completed
                             Log.d(ContentValues.TAG, "Mensaje añadido en las colecciones de ambos usuarios")
                         }
                 }

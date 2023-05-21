@@ -67,7 +67,9 @@ class FavsFragment : Fragment() {
     //Carga el detalle del producto cuando se pulsa en una de las tarjetas
     private fun loadProduct(product: Product) {
         val bundle = Bundle()
+        val emisor = "favs"
         bundle.putSerializable("objeto", product)
+        bundle.putString("emisor", emisor)
         //Navega al ProductFragment y le pasa el bundle como argumento
         view?.let { Navigation.findNavController(it) }
             ?.navigate(R.id.action_favsFragment_to_productFragment, bundle)

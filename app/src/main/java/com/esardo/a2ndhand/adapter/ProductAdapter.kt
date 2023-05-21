@@ -32,13 +32,10 @@ class ProductAdapter(
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding = ItemProductBinding.bind(view)
 
-        //Enlaza los elementos con su valor
         private val tvName = binding.tvName
         private val tvPrice = binding.tvPrice
         private val chxFav = binding.chxFav
 
-        //With Picasso library this will load the Product image, an image to show while data is loading,
-        // and an image to show if there's an error loading the Product image
         fun bind (product: Product, userId: String) {
             //Restablecer la imagen antes de cargar la nueva
             binding.ivImage.setImageResource(R.drawable.logo)
@@ -47,28 +44,27 @@ class ProductAdapter(
                 Picasso.get().load(productPic).placeholder(R.drawable.logo).error(R.drawable.logo).into(binding.ivImage)
             }
             tvName.text = product.Name
-            //Format price erasing decimals if it's value is 0
+            //Da formato al precio eliminando los decimales si su valor es 0
             val price = product.Price.toString().replace(".0", "") + " €"
             tvPrice.text = price
             chxFav.isChecked = product.isChecked
 
-            //To add/delete item to/from Favorite collection
+            //Para añadir/eliminar un artículo a/de la colección Favorite
             chxFav.setOnClickListener {
                 if(chxFav.isChecked) {
                     product.isChecked = true
-                    //Insert document to Favorite collection
+                    //Inserta el documento
                     viewModel.addFavorite(product.id, userId)
 
                 } else {
                     product.isChecked = false
-                    //Delete document from Favorite collection
+                    //Elimina el documento
                     viewModel.deleteFavorite(product.id, userId)
                 }
             }
 
-            //To load ProductFragment with the data of the item clicked
+            //Carga el ProductFragment con los datos del item pulsado
             itemView.setOnClickListener { loadProduct(product) }
         }
-
     }
 }

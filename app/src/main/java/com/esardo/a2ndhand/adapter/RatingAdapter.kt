@@ -27,7 +27,6 @@ class RatingAdapter(private val ratingList: List<Rating>) : RecyclerView.Adapter
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding = ItemRatingBinding.bind(view)
 
-        // Binds elements to it's value
         private val rbVotes = binding.rbVotes
         private val tvComment = binding.tvComment
         private val tvFrom = binding.tvFrom

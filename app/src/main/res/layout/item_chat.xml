@@ -2,45 +2,43 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="5dp"
-    android:layout_marginStart="5dp"
-    android:layout_marginEnd="5dp"
-    app:cardElevation="5dp"
-    app:cardCornerRadius="8dp">
+    android:layout_marginTop="@dimen/five"
+    android:layout_marginStart="@dimen/five"
+    android:layout_marginEnd="@dimen/five"
+    app:cardElevation="@dimen/five"
+    app:cardCornerRadius="@dimen/eight">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="@dimen/eight">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivPicture"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="@dimen/fifty_six"
+            android:layout_height="@dimen/fifty_six"
             android:src="@drawable/profile"
             android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/eight"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Usuario"
-                android:textSize="16sp"
+                android:textSize="@dimen/t_sixteen"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvLastMsg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¡Hola! ¿Cómo estás?"
-                android:textSize="14sp" />
+                android:textSize="@dimen/t_fourteen" />
 
             <TextView
                 android:id="@+id/tvDate"
@@ -48,8 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:gravity="end"
-                android:text="16/03/2023"
-                android:textSize="9sp" />
+                android:textSize="@dimen/t_nine" />
 
         </LinearLayout>
 

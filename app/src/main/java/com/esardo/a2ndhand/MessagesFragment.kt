@@ -13,7 +13,6 @@ import com.esardo.a2ndhand.model.Chat
 import com.esardo.a2ndhand.model.Message
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.MessageViewModel
-import com.google.firebase.Timestamp
 import java.util.*
 
 class MessagesFragment : Fragment() {
@@ -25,6 +24,7 @@ class MessagesFragment : Fragment() {
     private lateinit var viewModel: MessageViewModel
 
     private val messageList = mutableListOf<Message>()
+    private var msgListSize: Int = 0
     private lateinit var userId: String
     private lateinit var chat: Chat
 
@@ -58,6 +58,9 @@ class MessagesFragment : Fragment() {
 
         //Llamamos a la función getAllMessages para que se llene la lista de mensajes
         viewModel.getAllMessages(userId, chat.id)
+
+        //Guardamos el tamaño de la lista de mensajes
+        msgListSize = messageList.size
 
         //Cuando se pulse el botón de enviar se llama a la función que lo insertará en la base de datos
         binding.ivSend.setOnClickListener {

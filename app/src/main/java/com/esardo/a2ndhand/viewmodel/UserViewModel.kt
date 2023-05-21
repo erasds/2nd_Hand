@@ -19,7 +19,6 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 
 class UserViewModel: ViewModel() {
-
     private val storage = FirebaseStorage.getInstance()
     val db = FirebaseFirestore.getInstance()
     private val mAuth = FirebaseAuth.getInstance()
@@ -98,7 +97,6 @@ class UserViewModel: ViewModel() {
                 }
             }
             uploadTask.addOnFailureListener { exception ->
-                // Manejar error en caso de falla en la subida de imagen
                 Log.d(ContentValues.TAG, "No se ha podido subir la imagen", exception)
             }
         } else { //Sin imagen de perfil
@@ -166,59 +164,59 @@ class UserViewModel: ViewModel() {
         var townId = ""
         var picture = ""
         val townCol = db.collection("Town")
-            townCol.whereEqualTo("Name", town).get().addOnSuccessListener { towns ->
-                for (town in towns) {
-                    townId = town.id
-                }
-                //Subimos la foto y obtenemos su referencia
-                val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
-                if (imageUri != null) {
-                    val uploadTask = storageRef.putFile(imageUri)
-                    uploadTask.addOnSuccessListener { taskSnapshot ->
-                        storageRef.downloadUrl.addOnSuccessListener { uri ->
-                            picture = uri.toString()
-
-                            //Actualizamos los datos del usuario
-                            val userCol = db.collection("User")
-                            userCol.document(userId).set(
-                                hashMapOf(
-                                    "User" to userName,
-                                    "Name" to name,
-                                    "Surname" to surname,
-                                    "Phone" to phone,
-                                    "TownId" to townId,
-                                    "Picture" to picture
-                                ), SetOptions.merge())
-                                .addOnSuccessListener {
-                                    isUserUpdatedSuccessfully.postValue(true)
-                                    Log.d(ContentValues.TAG, "Usuario actualizado con éxtio")
-                                }.addOnFailureListener { e ->
-                                    isUserUpdatedSuccessfully.postValue(false)
-                                    Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
-                                }
-                        }
-                    }
-                } else {
-                    //Actualizamos los datos del usuario sin la foto
-                    val userCol = db.collection("User")
-                    userCol.document(userId).set(
-                        hashMapOf(
-                            "User" to userName,
-                            "Name" to name,
-                            "Surname" to surname,
-                            "Phone" to phone,
-                            "TownId" to townId
-                        ), SetOptions.merge())
-                        .addOnSuccessListener {
-                            isUserUpdatedSuccessfully.postValue(true)
-                            Log.d(ContentValues.TAG, "Usuario actualizado con éxtio")
-                        }.addOnFailureListener { e ->
-                            isUserUpdatedSuccessfully.postValue(false)
-                            Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
-                        }
-                }
-
+        townCol.whereEqualTo("Name", town).get().addOnSuccessListener { towns ->
+            for (town in towns) {
+                townId = town.id
             }
+            //Subimos la foto y obtenemos su referencia
+            val storageRef = storage.reference.child("images/${UUID.randomUUID()}")
+            if (imageUri != null) {
+                val uploadTask = storageRef.putFile(imageUri)
+                uploadTask.addOnSuccessListener {
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        picture = uri.toString()
+
+                        //Actualizamos los datos del usuario
+                        val userCol = db.collection("User")
+                        userCol.document(userId).set(
+                            hashMapOf(
+                                "User" to userName,
+                                "Name" to name,
+                                "Surname" to surname,
+                                "Phone" to phone,
+                                "TownId" to townId,
+                                "Picture" to picture
+                            ), SetOptions.merge())
+                            .addOnSuccessListener {
+                                isUserUpdatedSuccessfully.postValue(true)
+                                Log.d(ContentValues.TAG, "Usuario actualizado con éxito")
+                            }.addOnFailureListener { e ->
+                                isUserUpdatedSuccessfully.postValue(false)
+                                Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
+                            }
+                    }
+                }
+            } else {
+                //Actualizamos los datos del usuario sin la foto
+                val userCol = db.collection("User")
+                userCol.document(userId).set(
+                    hashMapOf(
+                        "User" to userName,
+                        "Name" to name,
+                        "Surname" to surname,
+                        "Phone" to phone,
+                        "TownId" to townId
+                    ), SetOptions.merge())
+                    .addOnSuccessListener {
+                        isUserUpdatedSuccessfully.postValue(true)
+                        Log.d(ContentValues.TAG, "Usuario actualizado con éxito")
+                    }.addOnFailureListener { e ->
+                        isUserUpdatedSuccessfully.postValue(false)
+                        Log.d(ContentValues.TAG, "Se ha producido un error al intentar actualizar el campo",e)
+                    }
+            }
+
+        }
         return isUserUpdatedSuccessfully
     }
 
@@ -235,7 +233,7 @@ class UserViewModel: ViewModel() {
                 callback(registered)
             }
             .addOnFailureListener { exception ->
-                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
+                Log.d(ContentValues.TAG, "Error obteniendo documentos: ", exception)
                 callback(false)
             }
     }
@@ -263,24 +261,33 @@ class UserViewModel: ViewModel() {
             }
     }
 
+    //Función para obtener los votos de un usuario
     fun getVotes(userId: String) {
         val userCol = db.collection("User").document(userId)
         val ratingCol = userCol.collection("Rating")
-        ratingCol.get().addOnSuccessListener { documents ->
-            ratingList.clear()
-            for (document in documents) {
-                val id = document.id
-                val data = document.toObject<Rating>()
-                val observations = data.Observations
-                val points = data.Points
-                val fromId = data.From
-                val rating = Rating(id, fromId, observations, points)
-                ratingList.add(rating)
+        ratingCol.addSnapshotListener { documents, exception ->
+            if (exception != null) {
+                Log.w(ContentValues.TAG, "Error obteniendo votos: ", exception)
+                return@addSnapshotListener
+            } else {
+                if(documents != null) {
+                    ratingList.clear()
+                    for (document in documents) {
+                        val id = document.id
+                        val data = document.toObject<Rating>()
+                        val observations = data.Observations
+                        val points = data.Points
+                        val fromId = data.From
+                        val rating = Rating(id, fromId, observations, points)
+                        ratingList.add(rating)
+                    }
+                    ratingLiveData.postValue(ratingList)
+                }
             }
-            ratingLiveData.postValue(ratingList)
         }
     }
 
+    //Función para insertar una valoración de usuario
     fun voteUser(userId: String, rating: Int, comment: String): LiveData<Boolean> {
         val isRatingAddedSuccessfully = MutableLiveData<Boolean>()
         //primero obtenemos el id del usuario que está haciendo la valoración
@@ -315,6 +322,4 @@ class UserViewModel: ViewModel() {
             }
         return isRatingAddedSuccessfully
     }
-
-
 }
