@@ -187,9 +187,9 @@ class ProductViewModel: ViewModel() {
         imageUris: List<Uri>,
         pictureId: String,
         context: Context
-    ): LiveData<Boolean>
+    ): LiveData<Product>
     {
-        val isProductUploadedSuccessfully = MutableLiveData<Boolean>()
+        val productLiveData = MutableLiveData<Product>()
         val priceD = price.toDouble()
         val publishDate = Timestamp(Date())
         var pic1 = ""
@@ -228,6 +228,20 @@ class ProductViewModel: ViewModel() {
                     "UserId" to userId,
                     "TownId" to townId,
                     "PublishDate" to publishDate
+                )
+
+                val updatedProduct = Product(
+                    productId,
+                    name,
+                    description,
+                    priceD,
+                    null,
+                    categoryId,
+                    isSell!!,
+                    userId!!,
+                    townId!!,
+                    publishDate.toDate(),
+                    false
                 )
 
                 //Si hay imágenes las sube a Cloud Storage y obtiene su url
@@ -284,45 +298,66 @@ class ProductViewModel: ViewModel() {
                             "Pic5" to pic5
                         )
 
-                        db.collection("Product").document(productId).apply{
-                            set(productUpdated)
-                                .addOnSuccessListener {
-                                    db.collection("Product").document(productId).
-                                    collection("Picture").document(pictureId).apply {
-                                        set(pictures)
-                                            .addOnSuccessListener {
-                                                //Product upload completed
-                                                isProductUploadedSuccessfully.postValue(true)
-                                                Log.d(
-                                                    TAG,
-                                                    "Producto y fotos actualizadas con éxito"
-                                                )
-                                            }
-                                    }
+                        val picturesObj = Picture(
+                            pictureId,
+                            pic1,
+                            pic2,
+                            pic3,
+                            pic4,
+                            pic5
+                        )
+                        updatedProduct.Picture = picturesObj
+
+                        db.collection("Product").document(productId)
+                            .set(productUpdated)
+                            .addOnSuccessListener {
+                                if (pictureId.isNullOrEmpty()) {
+                                    //No hay pictureId, inserta la colección
+                                    db.collection("Product").document(productId)
+                                        .collection("Picture")
+                                        .add(pictures)
+                                        .addOnSuccessListener { documentReference ->
+                                            //Obtener el ID del nuevo documento de imagen insertado
+                                            val newPictureId = documentReference.id
+                                            updatedProduct.Picture!!.id = newPictureId
+                                            productLiveData.postValue(updatedProduct)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.d(TAG, "Error al insertar nuevos datos de imagen en la colección 'Picture'", e)
+                                        }
+                                } else {
+                                    //Hay pictureId, actualiza los datos
+                                    db.collection("Product").document(productId)
+                                        .collection("Picture").document(pictureId)
+                                        .set(pictures)
+                                        .addOnSuccessListener {
+                                            productLiveData.postValue(updatedProduct)
+                                            Log.d(TAG, "Producto y fotos actualizadas con éxito")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.d(TAG, "Error al actualizar los datos de imagen en la colección 'Picture'", e)
+                                        }
                                 }
-                                .addOnFailureListener { e ->
-                                    isProductUploadedSuccessfully.postValue(false)
-                                    Log.d(TAG, "Se ha producido un error al intentar actualizar el producto y las fotos",e)
-                                }
-                        }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.d(TAG, "Error al actualizar el producto", e)
+                            }
                     }
                 } else {
                     db.collection("Product").document(productId).apply {
                         set(productUpdated)
                             .addOnSuccessListener {
-                                //Product upload completed
-                                isProductUploadedSuccessfully.postValue(true)
+                                productLiveData.postValue(updatedProduct)
                                 Log.d(TAG, "Producto actualizado con éxito")
                             }
                             .addOnFailureListener { e ->
-                                isProductUploadedSuccessfully.postValue(false)
                                 Log.d(TAG, "Se ha producido un error al intentar actualizar el producto",e)
                             }
                     }
                 }
             }
         }
-        return isProductUploadedSuccessfully
+        return productLiveData
     }
 
     //Función para eliminar un producto
@@ -393,49 +428,44 @@ class ProductViewModel: ViewModel() {
 
             val productCol = db.collection("Product")
             val query = productCol.whereEqualTo("IsSell", isSell)
-            query.addSnapshotListener { documents, exception ->
-                if (exception != null) {
-                    Log.w(TAG, "Error obteniendo productos: ", exception)
-                    return@addSnapshotListener
-                } else {
-                    if (documents != null) {
-                        productList.clear()
-                        for (document in documents) {
-                            val id = document.id
-                            val data = document.toObject<Product>()
-                            //Asigna el productId al objeto Product
-                            data.id = id
+            query.get().addOnSuccessListener { documents ->
+                productList.clear()
+                for (document in documents) {
+                    val id = document.id
+                    val data = document.toObject<Product>()
+                    //Asigna el productId al objeto Product
+                    data.id = id
 
-                            if (favoriteList.contains(id)) data.isChecked = true
-                            val pictureCol = productCol.document(id).collection("Picture")
+                    if (favoriteList.contains(id)) data.isChecked = true
+                    val pictureCol = productCol.document(id).collection("Picture")
 
-                            pictureCol.get().addOnSuccessListener { imageDocuments ->
-                                var image: Picture? = null
+                    pictureCol.get().addOnSuccessListener { imageDocuments ->
+                        var image: Picture? = null
 
-                                for (imageDocument in imageDocuments) {
-                                    val picId = imageDocument.id
-                                    val picData = imageDocument.toObject<Picture>()
-                                    val pic1 = picData.Pic1
-                                    val pic2 = picData.Pic2
-                                    val pic3 = picData.Pic3
-                                    val pic4 = picData.Pic4
-                                    val pic5 = picData.Pic5
+                        for (imageDocument in imageDocuments) {
+                            val picId = imageDocument.id
+                            val picData = imageDocument.toObject<Picture>()
+                            val pic1 = picData.Pic1
+                            val pic2 = picData.Pic2
+                            val pic3 = picData.Pic3
+                            val pic4 = picData.Pic4
+                            val pic5 = picData.Pic5
 
-                                    image = Picture(picId, pic1, pic2, pic3, pic4, pic5)
-                                }
-
-                                //Si hay alguna imagen la asignamos al objeto Product
-                                if (image != null) {
-                                    data.Picture = image
-                                }
-                                //Agregamos el objeto Product a la lista
-                                productList.add(data)
-                                //Actualizamos la lista y publicamos los cambios
-                                productLiveData.postValue(productList)
-                            }
+                            image = Picture(picId, pic1, pic2, pic3, pic4, pic5)
                         }
+
+                        //Si hay alguna imagen la asignamos al objeto Product
+                        if (image != null) {
+                            data.Picture = image
+                        }
+                        //Agregamos el objeto Product a la lista
+                        productList.add(data)
+                        //Actualizamos la lista y publicamos los cambios
+                        productLiveData.postValue(productList)
                     }
                 }
+            }.addOnFailureListener { exception ->
+                Log.w(TAG, "Error obteniendo productos: ", exception)
             }
         }.addOnFailureListener { exception ->
             Log.w(TAG, "Error cargando favoritos: ", exception)

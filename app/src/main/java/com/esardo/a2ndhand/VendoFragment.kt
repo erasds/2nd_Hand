@@ -53,7 +53,9 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
             if (it != null) {
                 productList.addAll(it)
             }
-            adapter.notifyDataSetChanged()
+            //adapter.notifyDataSetChanged()
+            val newAdapter = ProductAdapter(viewModel, userId, productList) { product -> loadProduct(product) }
+            recyclerView.adapter = newAdapter
         }
 
         //Guardamos el UserId de la referencia
@@ -61,9 +63,6 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
         if (userID != null) {
             userId = userID
         }
-
-        //Llamamos a la función getAllProducts para que se llene la lista de productos
-        viewModel.getAllProducts(isSell, userId)
 
         //Coge el texto del searchView y lo envía en la variable query
         binding.svProduct.setOnQueryTextListener(this)
@@ -165,5 +164,12 @@ class VendoFragment : Fragment(), SearchView.OnQueryTextListener {
             viewModel.getProductsByName(query)
         }
         return true
+    }
+
+    //Llamamos a la función getAllProducts para que se llene la lista de productos
+    override fun onResume() {
+        super.onResume()
+        productList.clear()
+        viewModel.getAllProducts(isSell, userId)
     }
 }

@@ -282,6 +282,7 @@ class ProductFragment : Fragment() {
         if (requestCode == UPDATE_PRODUCT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val updatedProduct = data.getSerializableExtra("updatedProduct") as? Product
             if (updatedProduct != null) {
+                productRef = updatedProduct
                 updateProductData(updatedProduct)
             }
         }
@@ -304,7 +305,7 @@ class ProductFragment : Fragment() {
 
                 //Ahora comprobamos si tiene imágenes
                 if(updatedProduct.Picture == null) {
-                    //Si no tiene, comprobamos si Product sí que tiene
+                    //Si no tiene limpiamos la lista
                     images.clear()
                 } else {
                     //Si tiene limpiamos la lista y la volvemos a llenar con los datos nuevos

@@ -1,5 +1,7 @@
 package com.esardo.a2ndhand
 
+import android.animation.Animator
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -15,8 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.esardo.a2ndhand.adapter.ItemAdapter
 import com.esardo.a2ndhand.databinding.ActivityUploadProductBinding
+import com.esardo.a2ndhand.model.Product
 import com.esardo.a2ndhand.model.User
 import com.esardo.a2ndhand.viewmodel.CategoryViewModel
 import com.esardo.a2ndhand.viewmodel.ProductViewModel
@@ -33,6 +37,7 @@ class UploadProduct : AppCompatActivity() {
 
     private var imageUris = mutableListOf<Uri>()
     var selectedButtonId: Int = 0
+
 
     private lateinit var viewModel: ProductViewModel
 
@@ -141,10 +146,14 @@ class UploadProduct : AppCompatActivity() {
                         imageUris,
                         pictureId,
                         context
-                    ).observe(this) { isFinished ->
-                        if(isFinished) {
+                    ).observe(this) { updatedProduct ->
+                        if(updatedProduct != null) {
                             imageUris.clear()
-                            finish()
+                            //Después de actualizar el producto
+                            val resultIntent = Intent()
+                            resultIntent.putExtra("updatedProduct", updatedProduct)
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            successAnimation(binding.ivSuccess, R.raw.success)
                         }
                     }
                 } else {
@@ -160,7 +169,7 @@ class UploadProduct : AppCompatActivity() {
                     ).observe(this) { isFinished ->
                         if (isFinished) {
                             imageUris.clear()
-                            finish()
+                            successAnimation(binding.ivSuccess, R.raw.success)
                         }
                     }
                 }
@@ -169,6 +178,30 @@ class UploadProduct : AppCompatActivity() {
             }
         }
     }
+
+    //Lanza la animación y cierra la actividad una vez termina
+    private fun successAnimation(
+        imageView: LottieAnimationView,
+        animation: Int
+    ) {
+        imageView.setAnimation(animation)
+        imageView.playAnimation()
+        imageView.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                finish()
+            }
+            override fun onAnimationCancel(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+                //No se necesita implementación aquí
+            }
+        })
+    }
+
 
     //Para seleccionar las imágenes del teléfono
     private fun selectImage(buttonId: Int) {
@@ -248,4 +281,11 @@ class UploadProduct : AppCompatActivity() {
     private fun showMessage(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onBackPressed() {
+        val resultIntent = Intent()
+        setResult(Activity.RESULT_CANCELED, resultIntent)
+        super.onBackPressed()
+    }
+
 }

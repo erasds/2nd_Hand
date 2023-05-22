@@ -62,9 +62,6 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
             userId = userID
         }
 
-        //Llamamos a la función getAllProducts para que se llene la lista de productos
-        viewModel.getAllProducts(isSell, userId)
-
         //Coge el texto del searchView y lo envía en la variable query
         binding.svProduct.setOnQueryTextListener(this)
         //Cuando se limpia el SearchView se vuelven a cargar todos los productos
@@ -166,4 +163,12 @@ class ComproFragment : Fragment(), SearchView.OnQueryTextListener {
         }
         return true
     }
+
+    //Llamamos a la función getAllProducts para que se llene la lista de productos
+    override fun onResume() {
+        super.onResume()
+        productList.clear()
+        viewModel.getAllProducts(isSell, userId)
+    }
+
 }

@@ -26,6 +26,7 @@
     <string name="price">Precio*</string>
     <string name="category">Categoría*</string>
     <string name="upload_prod">Subir producto</string>
+    <string name="delete_prod">¿Eliminar producto?</string>
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
     <string name="add_comment">Añade un comentario</string>

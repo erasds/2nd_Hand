@@ -8,6 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/delete_prod"
         android:textSize="@dimen/t_twenty"
         android:textStyle="bold"
         android:textAlignment="center"

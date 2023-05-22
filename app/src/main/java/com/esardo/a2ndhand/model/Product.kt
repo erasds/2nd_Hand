@@ -25,7 +25,7 @@ data class Product(
 
 @Keep
 data class Picture(
-    val id: String,
+    var id: String,
     var Pic1 : String,
     var Pic2 : String,
     var Pic3 : String,
