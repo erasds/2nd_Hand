@@ -166,6 +166,7 @@ class ProductFragment : Fragment() {
                             }
                             val totalPtsStr = totalPoints.toString()
                             tvRating.text = "$totalPtsStr puntos de usuario"
+                            if(totalPoints == 0) binding.tvSeeVotes.visibility = View.INVISIBLE
                         }
                     }
                 }

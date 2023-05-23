@@ -132,9 +132,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        //Llamamos a la función getMyProducts para que se llene la lista de productos
-        viewModel.getMyProducts(userId)
-
         //Al pulsar el icono de Editar perfil
         binding.btnEditProfile.setOnClickListener {
             //Carga SignInActivity y envía el UserId
@@ -249,5 +246,12 @@ class ProfileFragment : Fragment() {
                 //No se necesita implementación aquí
             }
         })
+    }
+
+    //Llamamos a la función getMyProducts para que se llene la lista de productos
+    override fun onResume() {
+        super.onResume()
+        productList.clear()
+        viewModel.getMyProducts(userId)
     }
 }
