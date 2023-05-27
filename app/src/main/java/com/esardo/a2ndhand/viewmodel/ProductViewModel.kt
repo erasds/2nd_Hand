@@ -308,8 +308,9 @@ class ProductViewModel: ViewModel() {
                         )
                         updatedProduct.Picture = picturesObj
 
+                        val options = SetOptions.merge()
                         db.collection("Product").document(productId)
-                            .set(productUpdated)
+                            .set(productUpdated, options)
                             .addOnSuccessListener {
                                 if (pictureId.isNullOrEmpty()) {
                                     //No hay pictureId, inserta la colección
@@ -344,8 +345,9 @@ class ProductViewModel: ViewModel() {
                             }
                     }
                 } else {
+                    val options = SetOptions.merge()
                     db.collection("Product").document(productId).apply {
-                        set(productUpdated)
+                        set(productUpdated, options)
                             .addOnSuccessListener {
                                 productLiveData.postValue(updatedProduct)
                                 Log.d(TAG, "Producto actualizado con éxito")

@@ -7,10 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esardo.a2ndhand.model.Chat
 import com.esardo.a2ndhand.model.Message
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 class ChatViewModel: ViewModel() {
     var chatLiveData: MutableLiveData<List<Chat>?> = MutableLiveData()
@@ -23,57 +25,61 @@ class ChatViewModel: ViewModel() {
         return chatLiveData
     }
 
-    //Función para obtener todos los chats
+    // Función para obtener todos los chats y mensajes
     fun getAllChats(userId: String) {
         val chatCol = db.collection("User").document(userId).collection("Chat")
-        chatCol.addSnapshotListener { documents, exception ->
-            if (exception != null) {
-                Log.w("TAG", "Error leyendo los documentos", exception)
-                return@addSnapshotListener
-            } else {
-                if(documents != null) {
-                    chatList.clear()
-                    for(document in documents) {
-                        val id = document.id
-                        val data = document.toObject<Chat>()
-                        val otherUser = data.OtherUser
-                        val chat = Chat(id, otherUser, Message("", "", "", "", Date()))
-                        chatList.add(chat)
-                    }
+        chatCol.get().addOnSuccessListener { chatDocuments ->
+            if (chatDocuments != null) {
+                val chatList = mutableListOf<Chat>()
 
-                    //Ahora recorremos los chats para consultar la subcolección de Message
-                    for (chat in chatList) {
-                        val messageCol = chatCol.document(chat.id).collection("Message")
-                        val query = messageCol.orderBy("Date", Query.Direction.DESCENDING).limit(1)
-                        query.addSnapshotListener { documents, exception ->
-                            if (exception != null) {
-                                Log.w("TAG", "Error leyendo los documentos", exception)
-                                return@addSnapshotListener
-                            } else {
-                                if (documents != null) {
-                                    for (document in documents) {
-                                        val id = document.id
-                                        val msgData = document.toObject<Message>()
-                                        val text = msgData.Text
-                                        val fromUser = msgData.FromUser
-                                        val toUser = msgData.ToUser
-                                        val date = msgData.Date
-                                        chat.Message.id = id
-                                        chat.Message.Text = text
-                                        chat.Message.FromUser = fromUser
-                                        chat.Message.ToUser = toUser
-                                        chat.Message.Date = date
-                                    }
-                                    chatLiveData.postValue(chatList)
-                                }
+                for (chatDocument in chatDocuments) {
+                    val chatId = chatDocument.id
+                    val chatData = chatDocument.toObject<Chat>()
+                    val otherUser = chatData.OtherUser
+                    val chat = Chat(chatId, otherUser, Message("", "", "", "", Date()))
+
+                    val messageCol = chatCol.document(chatId).collection("Message")
+                    val query = messageCol.orderBy("Date", Query.Direction.DESCENDING).limit(1)
+                    query.addSnapshotListener { messageDocuments, exception ->
+                        if (exception != null) {
+                            Log.w("TAG", "Error leyendo los documentos de mensajes", exception)
+                            return@addSnapshotListener
+                        }
+
+                        if (messageDocuments != null && !messageDocuments.isEmpty) {
+                            for (messageDocument in messageDocuments) {
+                                val messageId = messageDocument.id
+                                val msgData = messageDocument.toObject<Message>()
+                                val text = msgData.Text
+                                val fromUser = msgData.FromUser
+                                val toUser = msgData.ToUser
+                                val date = msgData.Date
+                                chat.Message.id = messageId
+                                chat.Message.Text = text
+                                chat.Message.FromUser = fromUser
+                                chat.Message.ToUser = toUser
+                                chat.Message.Date = date
                             }
                         }
-                    }
 
+                        val chatIndex = chatList.indexOfFirst { it.id == chatId }
+                        if (chatIndex != -1) {
+                            chatList[chatIndex] = chat
+                        } else {
+                            chatList.add(chat)
+                        }
+
+                        chatLiveData.postValue(chatList)
+                    }
                 }
             }
+        }.addOnFailureListener { exception ->
+            Log.w("TAG", "Error obteniendo los chats", exception)
+            // Manejar el error según tus necesidades
         }
     }
+
+
 
     //Función para insertar un nuevo chat
     fun createNewChat(userId: String, productUserId: String): LiveData<Chat?> {
