@@ -3,6 +3,7 @@ package com.esardo.a2ndhand
 import android.animation.Animator
 import android.app.Dialog
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -28,6 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 import org.bouncycastle.jcajce.provider.digest.SHA256
+import java.io.IOException
+import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
 class SignInActivity : AppCompatActivity() {
@@ -184,41 +187,49 @@ class SignInActivity : AppCompatActivity() {
         })
     }
 
-    //Crea el objeto ActivityResultLauncher para seleccionar la imagen y recibir el resultado
+    //Para decodificar el bitmap de la imagen de forma 'manual'
+    private fun decodeBitmap(uri: Uri): Bitmap? {
+        return try {
+            val inputStream: InputStream? = contentResolver.openInputStream(uri)
+            val options = BitmapFactory.Options()
+            options.inSampleSize = 2
+            BitmapFactory.decodeStream(inputStream, null, options)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+    //Guarda el bitmap de la imagen para poder mostrarla en el imageview
     @RequiresApi(Build.VERSION_CODES.P)
     private val someActivityResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             imageUri = uri
-            //Se guarda el estado para evitar que se pierda al girar la pantalla
-            onSaveInstanceState(Bundle())
-            //Convierte la Uri en un Bitmap para la miniatura
-            val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, imageUri!!)
-            val bitmap: Bitmap = ImageDecoder.decodeBitmap(source)
-            //Configura el Bitmap como fuente de la imagen en el ImageButton
-            binding.ibUpUserPhoto.setImageBitmap(bitmap)
+
+            val bitmap: Bitmap? = decodeBitmap(imageUri!!)
+            if (bitmap != null) {
+                binding.ibUpUserPhoto.setImageBitmap(bitmap)
+            }
         }
     }
-    //Llama al ActivityResultLauncher para seleccionar una imagen
+    //Abre el explorador del teléfono y permite seleccionar una imagen
     @RequiresApi(Build.VERSION_CODES.P)
     private fun selectImage() {
         someActivityResultLauncher.launch("image/*")
     }
-
-    //Guarda la imagen seleccionada en la instancia de la actividad
+    //Guarda la instancia del bitmap
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putParcelable("image_uri", imageUri)
+        super.onSaveInstanceState(outState)
     }
-
-    //Restaura la imagen seleccionada desde la instancia de la actividad
-    @RequiresApi(Build.VERSION_CODES.P)
+    //Cuando se vuelve a crear la actividad carga la instancia guardada del bitmap
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         imageUri = savedInstanceState.getParcelable("image_uri")
         if (imageUri != null) {
-            val source: ImageDecoder.Source = ImageDecoder.createSource(contentResolver, imageUri!!)
-            val bitmap: Bitmap = ImageDecoder.decodeBitmap(source)
-            binding.ibUpUserPhoto.setImageBitmap(bitmap)
+            val bitmap: Bitmap? = decodeBitmap(imageUri!!)
+            if (bitmap != null) {
+                binding.ibUpUserPhoto.setImageBitmap(bitmap)
+            }
         }
     }
 
